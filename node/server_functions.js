@@ -637,44 +637,51 @@ function lostandfound_logic(item) {
 
 function server_loot(type) {
 	if (type == "all") {
-		for (var mtype in D.drops.monsters) {
-			for (var j = 0; j < D.drops.monsters[mtype].length; j++) {
-				if (D.drops.monsters[mtype][j][0] > 0.1) {
-					D.drops.monsters[mtype][j][0] = 0.05;
+		if (instances.main) {
+			for (const mtype in D.drops.monsters) {
+				const mdrop = D.drops.monsters[mtype];
+				for (let j = 0; j < mdrop.length; j++) {
+					if (mdrop[j][0] > 0.1) {
+						mdrop[j][0] = 0.05;
+					}
 				}
 			}
-		}
-		for (var id in instances) {
-			if (instances[id].map != instances[id].name) {
-				continue;
-			}
-			for (var mid in instances[id].monsters) {
-				if (instances[id].monsters[mid].frequency < 4 && instances.main) {
-					drop_something(instances.main.players[NPC_prefix + "Kane"], instances[id].monsters[mid]);
+
+			const kane = instances.main.players[NPC_prefix + "Kane"];
+			for (const id in instances) {
+				const instance = instances[id];
+				if (instance.map != instance.name) {
+					continue;
+				}
+				for (const mid in instance.monsters) {
+					const monster = instance.monsters[mid];
+					if (monster.frequency < 4) {
+						drop_something(kane, monster);
+					}
 				}
 			}
 		}
 	}
-	for (var id in chests) {
-		var chest = chests[id];
-		if (type != "all" && hsince(chests[id].date) < 48) {
+	for (const cid in chests) {
+		const chest = chests[cid];
+		if (type != "all" && hsince(chest.date) < 48) {
 			return;
 		}
-		delete chests[id];
 		S.gold += chest.gold;
 		if (chest.cash) {
 			S.cash += chest.cash;
 		}
 		if (chest.items) {
-			chest.items.forEach(function (item) {
+			for (const item of chest.items) {
 				lostandfound_logic(item);
-			});
+			}
 		}
 		if (chest.pvp_items) {
-			chest.pvp_items.forEach(function (item) {
+			for (const item of chest.pvp_items) {
 				lostandfound_logic(item);
-			});
+			}
 		}
+		delete chests[cid];
 	}
 }
 
