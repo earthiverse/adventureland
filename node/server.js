@@ -2523,37 +2523,27 @@ function issue_player_award(attacker, target) {
 	}
 	var lost_xp = floor(min(max((target.max_xp * 0.01) / 10, (target.xp * 0.02) / 10), target.xp));
 
-	var lost_gold = 100;
-	var gain_gold = 100;
-	if (target.level >= 10) {
-		lost_gold = 1000;
-	}
-	if (target.level >= 20) {
-		lost_gold = 5000;
-	}
-	if (target.level >= 30) {
-		lost_gold = 12500;
-	}
-	if (target.level >= 40) {
-		lost_gold = 25000;
-	}
-	if (target.level >= 50) {
-		lost_gold = 50000;
-	}
-	if (target.level >= 55) {
-		lost_gold = 75000;
-	}
-	if (target.level >= 60) {
-		lost_gold = 125000;
-	}
-	if (target.level >= 65) {
-		lost_gold = 250000;
-	}
-	if (target.level >= 70) {
-		lost_gold = 500000;
-	}
+	let lost_gold = 100;
 	if (target.level >= 75) {
 		lost_gold = 1000000;
+	} else if (target.level >= 70) {
+		lost_gold = 500000;
+	} else if (target.level >= 65) {
+		lost_gold = 250000;
+	} else if (target.level >= 60) {
+		lost_gold = 125000;
+	} else if (target.level >= 55) {
+		lost_gold = 75000;
+	} else if (target.level >= 50) {
+		lost_gold = 50000;
+	} else if (target.level >= 40) {
+		lost_gold = 25000;
+	} else if (target.level >= 30) {
+		lost_gold = 12500;
+	} else if (target.level >= 20) {
+		lost_gold = 5000;
+	} else if (target.level >= 10) {
+		lost_gold = 1000;
 	}
 
 	lost_gold = min(lost_gold, max(attacker.gold, 10000) * 4) || 0;
@@ -2576,7 +2566,7 @@ function issue_player_award(attacker, target) {
 	}
 
 	lost_gold = min(target.gold, lost_gold);
-	gain_gold = round(lost_gold * 0.9);
+	let gain_gold = round(lost_gold * 0.9);
 
 	if (target.type == "merchant") {
 		lost_xp = 0;
