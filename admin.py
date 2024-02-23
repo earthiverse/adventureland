@@ -10,7 +10,6 @@ def serve_admin_maker():
 	user.put()
 	return "done!"
 
-
 @app.route('/admin/renderer')
 @ndb.toplevel
 def serve_render():
@@ -61,7 +60,15 @@ def serve_executor_post():
 		output="executor_task triggered"
 	else:
 		try:
-			exec(the_code)
+			if 1/2!=0:
+				ld={}
+				exec(the_code,globals(),ld)
+				output=ld.get("output",output)
+				json_output=ld.get("json_output",json_output)
+				html_output=ld.get("html_output",html_output)
+				output_html=ld.get("output_html",output_html)
+				inspect=ld.get("inspect",inspect)
+			else: exec(the_code)
 		except DeadlineExceededError: logging.error("Deadline Exceeded")
 		except:
 			log_trace_i("",logging)

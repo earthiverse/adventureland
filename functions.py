@@ -276,6 +276,7 @@ def selection_info(self,user,domain):
 	return {"type":"content","html":shtml("htmls/contents/selection.html",user=user,domain=domain,server=server,servers=servers,characters=get_characters(user))}
 
 def security_threat(request,domain):
+	#return False
 	referer=request.headers.get('Referer') or request.headers.get('Origin') or ""
 	if not referer: return False
 
@@ -1030,12 +1031,21 @@ def verify_steam_installs():
 	for id in checks:
 		try:
 			result=checks[id].get_result()
-			if result.content.find('"ownsapp":true')!=-1:
-				logging.info("%s yes!"%id)
-			elif result.content.find('"ownsapp":false')!=-1:
-				logging.error("%s no!"%id)
+			if 1/2==0:
+				if result.content.find(b'"ownsapp":true')!=-1:
+					logging.info("%s yes!"%id)
+				elif result.content.find('"ownsapp":false')!=-1:
+					logging.error("%s no!"%id)
+				else:
+					logging.error("%s Unhandled output %s"%(id,result.content))
 			else:
-				logging.error("%s Unhandled output %s"%(id,result.content))
+				result=checks[id].get_result()
+				if b'"ownsapp":true' in result.content:
+					logging.info("%s yes!"%id)
+				elif b'"ownsapp":false' in result.content:
+					logging.error("%s no!"%id)
+				else:
+					logging.error("%s Unhandled output %s"%(id,result.content))
 		except:
 			log_trace()
 
@@ -1203,7 +1213,7 @@ def select_server(self,user,servers):
 	return servers[0]
 
 def get_servers(no_cache=False):
-	servers=memcache.get("servers")
+	servers=memcache.get("servers"+(1/2!=0 and "v3" or ""))
 	if not servers or no_cache:
 		servers=[]
 		for server in Server.query(Server.online == True):
@@ -1220,7 +1230,7 @@ def set_servers(current=None):
 		if msince(server.last_update)<5 and server.online and not (current and current.k()==server.k()):
 			del server.info.data # otherwise easily exceeds 1MB [13/06/19]
 			servers.append(server)
-	memcache.set("servers",servers)
+	memcache.set("servers"+(1/2!=0 and "v3" or ""),servers)
 
 def check_servers():
 	offlines=[]; servers=[]
@@ -1242,7 +1252,7 @@ def check_servers():
 			del server.info.data
 			servers.append(server)
 			logging.info("Server Alive: %s"%server)
-	memcache.set("servers",servers)
+	memcache.set("servers"+(1/2!=0 and "v3" or ""),servers)
 	if offlines:
 		send_email(gdi(),"kaansoral@gmail.com",html="%s"%offlines,title="OFFLINE SERVERS DETECTED")
 	enforce_limitations()
@@ -1528,6 +1538,14 @@ def to_string_key(element):
 	if is_string(element): return element
 	return element.k()
 
+def py3_safe_string(s):
+	#Because App Engine is run by a bunch of idiots now. Random things return bytes. Even something like .urlsafe() ... [06/02/24]
+	if 1/2==0: return s
+	try:
+		return s.decode("utf-8")
+	except:
+		return s
+
 def str_or_unicode(s):
 	try: return str(s)
 	except:
@@ -1743,8 +1761,8 @@ def jhtml(request,jsn=[]):
 	if not request: return
 	if getattr(request,"_cjsons",0):
 		request._cjsons.extend(jsn)
-		#logging.info("CJSONS %s"%self._cjsons)
-		request.response.set_data(json.dumps(self._cjsons))
+		#logging.info("CJSONS %s"%request._cjsons)
+		request.response.set_data(json.dumps(request._cjsons))
 	else:
 		request.response.set_data(json.dumps(jsn))
 	return request.response
@@ -2041,7 +2059,7 @@ def ginspect(o,id="root",force_inspection=0):
 		str+="</ul>"
 	elif type(o)==type({}):
 		str+="<ul>"
-		keys=o.keys(); keys.sort()
+		keys=sorted(o)
 		for k in keys:
 			e=o[k]
 			cid=randomStr(20)
@@ -2226,10 +2244,7 @@ _pack_int = Struct('>I').pack
 #https://code.google.com/p/googleappengine/issues/detail?id=5303 and https://github.com/mitsuhiko/python-pbkdf2/blob/master/pbkdf2.py
 def pbkdf2_hex(data, salt, iterations=1000, keylen=24, hashfunc=None):
 	"""Like :func:`pbkdf2_bin` but returns a hex encoded string."""
-	if 1/2==0:
-		return pbkdf2_bin(data, salt, iterations, keylen, hashfunc).encode('hex')
-	else:
-		pbkdf2_bin(data, salt, iterations, keylen, hashfunc).encode("utf-8").hex()
+	return pbkdf2_bin(data, salt, iterations, keylen, hashfunc).encode('hex')
 
 def pbkdf2_bin(data, salt, iterations=1000, keylen=24, hashfunc=None):
 	"""Returns a binary digest for the PBKDF2 hash algorithm of `data`
@@ -2242,24 +2257,56 @@ def pbkdf2_bin(data, salt, iterations=1000, keylen=24, hashfunc=None):
 	def _pseudorandom(x, mac=mac):
 		h = mac.copy()
 		h.update(x)
-		if 1/2==0:
-			return map(ord, h.digest())
-		else:
-			return map(lambda x:x, h.digest())
+		return map(ord, h.digest())
 	buf = []
 	for block in xrange(1, -(-keylen // mac.digest_size) + 1):
-		if 1/2 == 0:
-			rv = u = _pseudorandom(salt + _pack_int(block))
-			for i in xrange(iterations - 1):
-				u = _pseudorandom(''.join(map(chr, u)))
-				rv = starmap(xor, izip(rv, u))
-		else:
-			rv = u = _pseudorandom(salt.encode(encoding = 'UTF-8', errors = 'strict') + _pack_int(block))
-			for i in xrange(iterations - 1):
-				u = _pseudorandom(''.join(map(chr, u)).encode(encoding = 'UTF-8', errors = 'strict'))
-				rv = starmap(xor, izip(rv, u))
+		rv = u = _pseudorandom(salt + _pack_int(block))
+		for i in xrange(iterations - 1):
+			u = _pseudorandom(''.join(map(chr, u)))
+			rv = starmap(xor, izip(rv, u))
 		buf.extend(rv)
 	return ''.join(map(chr, buf))[:keylen]
+
+if 1/2!=0:
+	# big thanks to https://github.com/mitsuhiko/python-pbkdf2/issues/8 [07/02/24]
+	try:
+		from itertools import izip as zip
+	except ImportError: pass # py3
+
+	try: range = xrange
+	except NameError: pass # py3
+
+	_pack_int = Struct('>I').pack
+	def pbkdf2_hex(data, salt, iterations=1000, keylen=24, hashfunc=None):
+		salt=bytes(salt,'utf-8')
+		"""Like :func:`pbkdf2_bin` but returns a hex encoded string."""
+		return str(''.join('%02x'%(v if type(v) is int else ord(v)) for v in
+			pbkdf2_bin(data, salt, iterations, keylen, hashfunc)))
+
+
+	def pbkdf2_bin(data, salt, iterations=1000, keylen=24, hashfunc=None):
+		"""Returns a binary digest for the PBKDF2 hash algorithm of `data`
+		with the given `salt`.  It iterates `iterations` time and produces a
+		key of `keylen` bytes.  By default SHA-1 is used as hash function,
+		a different hashlib `hashfunc` can be provided.
+		"""
+		hashfunc = hashfunc or hashlib.sha1
+		mac = hmac.new(data, None, hashfunc)
+
+		buf = []
+		for block in range(1, -(-keylen // mac.digest_size) + 1):
+			h = mac.copy()
+			h.update(salt + _pack_int(block))
+			u = h.digest()
+			rv = list(bytearray(u)) # needs further testing on py2 and could possibly be more performant
+			for i in range(iterations - 1):
+				h = mac.copy()
+				h.update(bytes(u))
+				u = h.digest()
+				rv = starmap(xor, zip(rv, list(bytearray(u))))
+
+			buf.extend(rv)
+		return ''.join(map(chr, buf))[:keylen]
 
 def hash_password(password,salt):
 	password=password.replace(" ","").encode('utf8')

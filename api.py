@@ -6,6 +6,8 @@ def signup_or_login_api(**args):
 	self,domain,email,password,only_login,only_signup,mobile=gdmuld(args,"self","domain","email","password","only_login","only_signup","mobile")
 	logging.info("Signup or Login")
 	
+	#jhtmle(self,"Disabled for now"); return
+
 	try: email=purify_email(email)
 	except: return jhtmle(self,"Invalid Email")
 
@@ -979,12 +981,13 @@ def pull_mail_api(**args):
 	else:
 		mails,new_cursor,new_more=Mail.query(Mail.owner==user.k()).order(-Mail.created).fetch_page(page)
 	for mail in mails:
-		mail_data={"fro":mail.fro,"to":mail.to,"message":mail.info.message,"subject":mail.info.subject,"sent":"%s"%mail.created,"id":mail.k()}
+		#logging.info("%s"%mail.created)
+		mail_data={"fro":py3_safe_string(mail.fro),"to":py3_safe_string(mail.to),"message":py3_safe_string(mail.info.message),"subject":py3_safe_string(mail.info.subject),"sent":"%s"%mail.created,"id":mail.k()}
 		if mail.item:
 			mail_data["item"]=simplify_item(mail.info.item)
 			mail_data["taken"]=mail.taken
 		data["mail"].append(mail_data)
-	if new_cursor: data["cursor"]=new_cursor.urlsafe()
+	if new_cursor: data["cursor"]=py3_safe_string(new_cursor.urlsafe())
 	if new_more: data["more"]=True
 	jhtml(self,[data])
 
@@ -1073,10 +1076,10 @@ def pull_messages_api(**args):
 	else:
 		messages,new_cursor,new_more=query.fetch_page(page)
 	for message in messages:
-		m_data={"fro":message.fro,"to":message.to,"message":message.info.message,"type":message.type,"id":message.k(),"server":message.server,"date":"%s"%message.created.strftime('%Y-%m-%dT%H:%M:%SZ')}
+		m_data={"fro":py3_safe_string(message.fro),"to":py3_safe_string(message.to),"message":py3_safe_string(message.info.message),"type":py3_safe_string(message.type),"id":message.k(),"server":py3_safe_string(message.server),"date":"%s"%message.created.strftime('%Y-%m-%dT%H:%M:%SZ')}
 		data["messages"].append(m_data)
 		#logging.info(m_data)
-	if new_cursor: data["cursor"]=new_cursor.urlsafe()
+	if new_cursor: data["cursor"]=py3_safe_string(new_cursor.urlsafe())
 	if new_more: data["more"]=True
 	jhtml(self,[data])
 
@@ -1707,8 +1710,9 @@ def simplify_args_for_logging(args):
 @app.route('/api', methods=['POST'])
 @app.route('/api/<name>', methods=['POST'])
 @app.route('/api/<name>/<extra>', methods=['POST'])
+@app.route('/api/<name>/<extra>/<extra2>', methods=['POST'])
 @ndb.toplevel
-def server_api(name="",extra=""):
+def server_api(name="",extra="",extra2=""):
 	self=request # [26/01/24] easier for now
 	domain=gdi(self)
 	server=get_server(self,domain)

@@ -35,15 +35,25 @@ else: #python3
 	from libraries import stripe3 as stripe
 	from libraries import amazon_ses3 as amazon_ses
 	import _pickle as cPickle
+
 from google.appengine.api import memcache,urlfetch,urlfetch_errors,mail,taskqueue,images,namespace_manager,search,modules
 from google.appengine.ext import ndb,blobstore,deferred
 from google.appengine.runtime import DeadlineExceededError
 from google.appengine.runtime.apiproxy_errors import DeadlineExceededError as DeadlineExceededError2
 from google.appengine.datastore.datastore_query import Cursor
 
-from flask import Flask, render_template, request, make_response 
+def from_base_type(self, value):
+	try:
+		return pickle.loads(value)
+	except:
+		return pickle.loads(value,encoding='latin1')
+ndb.model.PickleProperty._from_base_type=from_base_type
+
+from flask import Flask, render_template, request, make_response, redirect
 
 app = Flask(__name__)
+# app = ndb.toplevel(app) # sadly doesn't work this way
+
 if 1/2 != 0:
 	app.wsgi_app = wrap_wsgi_app(app.wsgi_app, use_deferred=True)
 
@@ -104,12 +114,20 @@ if is_production:
 	#maps["desertland"]["key"]="jayson_desertland_copy"
 	pass
 
-game_version=786
+game_version=793
 SALES=4+5+388+5101+125/20 #donation+manual+macos+steam+sales
 update_notes=[
-	"Lunar New Year Event",
-	"Last Update [19th of January]",
-	"Switched to Python3",
+	"Last Update [21st of February]",
+	"Included PR's:",
+	"Introduce tags for some debuffs #81",
+	"When Fishing or Mining something that uses open keep the phrase #84",
+	"Fixed URL in GitHub link #101",
+	"Fix small bug with async code snippets #102",
+	"Mob respawn adjustment through .grow #103",
+	"Fix infinite range for curse, cburst, and 3shot/5shot #104",
+	"Improve Computer and Super Computer UI #106",
+	"Change equip_batch's base cost from 1 to 0.5 #108",
+	"Fix throw skill to pierce immunity #109",
 ]
 ip_to_subdomain={ #IMPORTANT: SPECIAL PAGE RULES ARE NEEDED: https://dash.cloudflare.com/b6f5a13bded5fdd273e4a1cd3777162d/adventure.land/page-rules - uss1 / eus1 was best
 	"35.187.255.184":"asia1",

@@ -39,7 +39,7 @@ drops={
 			#[0.009,"open","eastereggs"], #originally 0.009
 			#[0.0001,"redenvelopev2"],
 			#[0.0001,"redenvelopev3"],
-			[0.00005,"greenenvelope"],
+			#[0.00005,"greenenvelope"],
 			#[0.0001,"redenvelopev4"],
 			#[0.001,"candypop"],
 		],

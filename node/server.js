@@ -170,7 +170,7 @@ var mode = {
 var events = {
 	// SEASONS
 	holidayseason: false,
-	lunarnewyear: true,
+	lunarnewyear: false,
 	valentines: false,
 	pinkgoo: 0, // every N minutes - 60
 	snowman: 20 * 60, // 1200 normally - 60 - at sprocess_game_data
@@ -2886,9 +2886,6 @@ function commence_attack(attacker, target, atype) {
 	} else if (atype == "cburst") {
 		var mp_cutoff = attacker.next_mp;
 		var mp = attacker.next_mp;
-		if (atype == "cburst") {
-			mp = mp_cutoff = attacker.next_mp;
-		}
 		if (attacker.mp < mp_cutoff) {
 			attacker.socket.emit("game_response", { response: "no_mp" });
 			return { failed: true, reason: "no_mp", place: atype, id: target.id };
@@ -3413,12 +3410,7 @@ function complete_attack(attacker, target, info) {
 				o_attack = attack = ceil(attack);
 
 				if (info.conditions.includes("frozen") && !target.immune && target.hp > attack) {
-					if (Math.random() < target.fzresistance / 100.0) {
-						xy_emit(target, "ui", { type: "freeze_resist", id: target.id });
-					} else {
-						add_condition(target, "frozen");
-						disappearing_text(target.socket, target, "FREEZE!", { xy: 1, size: "huge", color: "freeze", nv: 1 }); //target.is_player&&"huge"||undefined
-					}
+					add_condition(target, "frozen");
 				}
 
 				if (info.conditions.includes("burned") && !target.immune && target.hp > attack) {
@@ -3434,13 +3426,9 @@ function complete_attack(attacker, target, info) {
 					add_condition(target, "woven");
 				}
 
-				if (
-					info.conditions.includes("stunned") &&
-					target.hp > attack &&
-					add_condition(target, "stunned", { duration: 2000 })
-				) {
-					disappearing_text(target.socket, target, "STUN!", { xy: 1, size: "huge", color: "stun", nv: 1 });
-				} //target.is_player&&"huge"||undefined
+				if (info.conditions.includes("stunned") && target.hp > attack) {
+					add_condition(target, "stunned", { duration: 2000 });
+				}
 
 				if (info.procs && target.a.putrid) {
 					add_condition(attacker, "poisoned");
@@ -4093,7 +4081,7 @@ function init_io() {
 						climit = round(climit / 4);
 					}
 					if (method == "equip_batch") {
-						var cost = 1;
+						var cost = 0.5;
 						if (Array.isArray(data)) {
 							cost += data.length / 2;
 						}
@@ -5048,8 +5036,15 @@ function init_io() {
 				if (simple_distance(player, { in: f, map: f, x: ref[0], y: ref[1] }) > 120) {
 					return fail_response("transport_cant_reach");
 				}
-				if (data.name && instances[data.name] && instances[data.name].map == data.place) {
-					transport_player_to(player, data.name);
+				if (data.name) {
+					// Player requested to enter an existing instance
+					if (instances[data.name] && instances[data.name].map == data.place) {
+						// The instance exists
+						transport_player_to(player, data.name);
+					} else {
+						// The instance doesn't exist
+						return fail_response("transport_cant_invalid");
+					}
 				} else {
 					if (!consume_one_by_id(player, item)) {
 						return fail_response("transport_cant_item");
@@ -8261,8 +8256,12 @@ function init_io() {
 			}
 
 			// Range check
-			if (target && (gSkill.range || gSkill.use_range)) {
+			const isTargetTooFar = (target) => {
+				// Use the range of the skill, falling back to the player range if it isn't set
 				let range = gSkill.range || player.range;
+				if (gSkill.global) {
+					return false;
+				}
 				if (gSkill.range_multiplier) {
 					range *= gSkill.range_multiplier;
 				}
@@ -8276,12 +8275,16 @@ function init_io() {
 
 				const dist = distance(player, target);
 				if (dist > range + player.xrange) {
-					return fail_response("too_far", data.name, { dist: dist, id: target.id });
+					return true;
 				}
 				if (dist > range) {
 					// xrange was used, reduce it by however much we used
 					player.xrange -= dist - range;
 				}
+				return false;
+			};
+			if (target && isTargetTooFar(target)) {
+				return fail_response("too_far", data.name, { dist: dist, id: target.id });
 			}
 
 			// Consume item check
@@ -8461,7 +8464,7 @@ function init_io() {
 				xy_emit(player, "ui", { type: data.name, name: player.name });
 				player.to_resend = "u+cid";
 			} else if (data.name == "throw") {
-				if (target.s.invincible || target.immune) {
+				if (target.s.invincible) {
 					return fail_response("target_invincible", data.name);
 				}
 				var item = player.items[data.num];
@@ -8575,37 +8578,41 @@ function init_io() {
 					resend(target, "u+cid");
 				}
 			} else if (data.name == "cburst") {
-				var hit = {};
-				var times = 0;
+				var targeted = {};
 				var attack = null;
 				var c_resolve = null;
 				consume_mp(player, gSkill.mp);
 				player.first_burst = true;
 				player.halt = true;
 				if (is_array(data.targets)) {
-					data.targets.forEach(function (t) {
-						// console.log(id);
-						var id = t[0];
-						var mp = max(0, parseInt(t[1]) || 0);
-						if (player.mp < 20 || times > 16 || !mp) {
-							return;
+					// Only look at the first 16 targets in the array if more are provided
+					for (const t of data.targets.slice(0, 16)) {
+						const id = t[0];
+
+						// Prevent attacking the same entity twice
+						if (targeted[id]) {
+							continue;
 						}
-						times += 1;
-						var target = instances[player.in].monsters[id];
+						targeted[id] = true;
+
+						const mp = max(0, parseInt(t[1]) || 0);
+						if (mp <= 0) {
+							continue;
+						}
+						let target = instances[player.in].monsters[id];
 						if (!target) {
 							target = instances[player.in].players[id];
 						}
 						if (!target || is_invinc(target) || target.name == player.name) {
-							return;
+							continue;
 						}
-						if (hit[id]) {
-							return;
+						if (isTargetTooFar(target)) {
+							continue;
 						}
-						hit[id] = true;
 						player.next_mp = mp;
 						attack = commence_attack(player, target, "cburst");
 						if (!attack || !attack.projectile) {
-							return;
+							continue;
 						}
 						if (!c_resolve) {
 							c_resolve = attack;
@@ -8615,14 +8622,12 @@ function init_io() {
 							c_resolve.pids.push(attack.pid);
 							c_resolve.targets.push(attack.target);
 						}
-					});
+					}
 				}
 				player.halt = false;
 				player.to_resend = "u+cid";
 				if (!c_resolve) {
-					if (attack) {
-						reject = attack;
-					}
+					reject = { failed: true, place: data.name, reason: "no_target" };
 					disappearing_text(player.socket, player, "NO HITS");
 				} else {
 					resolve = c_resolve;
@@ -8664,40 +8669,34 @@ function init_io() {
 				xy_emit(player, "ui", { type: data.name });
 			} else if (data.name == "3shot" || data.name == "5shot") {
 				player.halt = true;
-				var times = 0;
-				var hit = {};
-				var reftarget = null;
-				var targets = 3;
-				var attack = null;
-				var c_resolve = null;
-				if (data.name == "5shot") {
-					targets = 5;
-				}
+				const targeted = {};
+				let c_resolve = null;
 				//console.log(data.ids);
 				if (is_array(data.ids)) {
-					data.ids.forEach(function (id) {
-						if (times >= targets) {
-							return;
+					// Only look at the first Xshot targets in the array if more are provided
+					for (const id of data.ids.slice(0, data.name === "5shot" ? 5 : 3)) {
+						// Prevent attacking the same entity twice
+						if (targeted[id]) {
+							continue;
 						}
-						times += 1;
-						var target = instances[player.in].monsters[id];
+						targeted[id] = true;
+
+						target = instances[player.in].monsters[id];
 						if (!target) {
 							target = instances[player.in].players[id];
 						}
+
 						if (!target || is_invinc(target) || target.name == player.name) {
-							attack = { failed: true, place: data.name, reason: "no_target" };
-							return;
+							continue;
 						}
-						if (hit[id]) {
-							return;
+						if (isTargetTooFar(target)) {
+							continue;
 						}
-						hit[id] = true;
-						attack = commence_attack(player, target, data.name);
+						const attack = commence_attack(player, target, data.name);
 						if (!attack || !attack.projectile) {
-							return;
+							continue;
 						}
 						if (!c_resolve) {
-							reftarget = target;
 							c_resolve = attack;
 							attack.pids = [attack.pid];
 							attack.targets = [attack.target];
@@ -8705,16 +8704,13 @@ function init_io() {
 							c_resolve.pids.push(attack.pid);
 							c_resolve.targets.push(attack.target);
 						}
-						// if(times==1 && attack==null) times=40;
-					});
+					}
 				}
-				consume_mp(player, gSkill.mp, reftarget);
 				player.halt = false;
 				player.to_resend = "u+cid";
+				consume_mp(player, gSkill.mp, target);
 				if (!c_resolve) {
-					if (attack) {
-						reject = attack;
-					}
+					reject = { failed: true, place: data.name, reason: "no_target" };
 					disappearing_text(player.socket, player, "NO HITS");
 				} else {
 					resolve = c_resolve;

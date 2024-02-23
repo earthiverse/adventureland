@@ -225,7 +225,7 @@ def serve_resort_get(name="",suffix=""):
 	if not name: return
 	name=name.split("/")[0]
 	domain=gdi(request); user=get_user(request,domain)
-	if security_threat(request,domain): return
+	if security_threat(request,domain): return "security_threat"
 	if not user or (not name.startswith("%s_"%user.k()) and user.k() not in inner_circle): return
 	number=name.split("_")[1]
 	if number not in ["1","2","3","4","5","6","7","8","9","10"]: return
@@ -293,12 +293,17 @@ def serve_credits():
 	return whtml(request,"htmls/page.html",domain=domain,user=user,content="credits")
 
 @app.route('/docs')
-@app.route('/docs/<path>')
-def serve_docs(path=""):
+@app.route('/docs/<path0>')
+@app.route('/docs/<path0>/<path1>')
+@app.route('/docs/<path0>/<path1>/<path2>')
+@app.route('/docs/<path0>/<path1>/<path2>/<path3>')
+def serve_docs(path0="",path1="",path2="",path3=""):
 	domain=gdi(request); user=get_user(request,domain); domain.title="Docs"
-	if len(path):
-		domain.title="Docs /%s"%path
-	path=path.split("/")
+	if path0: domain.title+=" /%s"%path0
+	if path1: domain.title+="/%s"%path1
+	if path2: domain.title+="/%s"%path2
+	if path3: domain.title+="/%s"%path3
+	path=[path0,path1,path2,path3]
 	return whtml(request,"htmls/docs.html",domain=domain,user=user,content="docs",dpath=path,extras=True)
 
 @ndb.toplevel

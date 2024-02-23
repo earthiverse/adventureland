@@ -1242,9 +1242,9 @@ function inventory_click(num,event)
 		else if(character.items[num])
 		{
 			if(character.items[num].name=="placeholder") return;
-			if(character.items[num].name=="computer") // gameplay=="hardcore" && 
+			if(character.items[num].name=="computer" || character.items[num].name=="supercomputer") // gameplay=="hardcore" && 
 			{
-				return render_computer_network(".inventory-item");
+				return render_computer_network(".inventory-item",character.items[num].name,num);
 			}
 			render_item(".inventory-item",{id:"citem"+num,item:G.items[character.items[num].name],name:character.items[num].name,actual:character.items[num],num:num,inventory_ui:num});
 			last_invclick=num+iname;
@@ -1663,7 +1663,7 @@ function code_eval(snippet)
 {
 	var f="eval";
 	if(snippet.search("output=")!=-1 || snippet.search("json_output=")!=-1) f="eval_s";
-	if(snippet.search("await")!=-1) snippet="(async () => {"+snippet+"})()";
+	if(snippet.search("await")!=-1) snippet="(async () => {"+snippet+"\n})()";
 	if(code_active)
 	{
 		call_code_function(f,snippet);
@@ -2845,6 +2845,15 @@ function open_merchant(num)
 function close_merchant()
 {
 	socket.emit("merchant",{close:1});
+	return push_deferred("merchant");
+}
+
+function toggle_merchant(num) {
+	if(character.stand) {
+		socket.emit("merchant",{close:1});
+	} else {
+		socket.emit("merchant",{num:num});
+	}
 	return push_deferred("merchant");
 }
 

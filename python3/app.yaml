@@ -1,17 +1,19 @@
-runtime: python312
+runtime: python39
 app_engine_apis: true
-threadsafe: true
-api_version: 1
 builtins:
 - deferred: on
 
 #F2/F4: same warmup handler performance [14/10/14]
-instance_class: F2
+instance_class: F4_1G
 automatic_scaling:
-  min_idle_instances: 0
-  max_idle_instances: 1
-  min_pending_latency: 6000ms
-  max_pending_latency: 12000ms
+ min_idle_instances: 0
+ max_idle_instances: 1
+ min_pending_latency: 14000ms
+# max_pending_latency: 12000ms
+
+#instance_class: B2
+#manual_scaling:
+#  instances: 1
 
 default_expiration: "4d"
 
@@ -33,6 +35,7 @@ handlers:
   script: auto
 
 env_variables:
+#  NDB_PY2_UNPICKLE_COMPAT: True
   NDB_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: True
   MEMCACHE_USE_CROSS_COMPATIBLE_PROTOCOL: True
   DEFERRED_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL:  True

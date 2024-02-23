@@ -2154,10 +2154,16 @@ function render_tracker()
 	show_modal(html,{wwidth:578,hideinbackground:true});
 }
 
-function render_computer($element)
+function render_computer($element,type="computer",slot=0)
 {
 	var html="";
 	html+="<div style=\"color: #32A3B0\">CONNECTED.</div>";
+	html+="<div onclick='socket.emit(\"trade_history\",{})' class='clickable' style='color: #E4E4E4'><span style='color: #BA61A4'>&gt;</span> TRADE HISTORY</div>";
+	html+="<div onclick='toggle_merchant(\"" + slot + "\")' class='clickable' style='color: #E4E4E4'><span style='color: #BA61A4'>&gt;</span> TOGGLE STAND</div>";
+	if(type == "supercomputer") {
+		html+="<div onclick=\"socket.emit('tracker')\" class='clickable' style='color: #E4E4E4'><span style='color: #BA61A4'>&gt;</span> TRACKER</div>";
+	}
+	
 	html+="<div onclick='render_upgrade_shrine()' class='clickable' style='color: #E4E4E4'><span style='color: #BA61A4'>&gt;</span> UPGRADE</div>"; // style='color: #C3C3C3' style='color: #D6D6D6'
 	html+="<div onclick='render_compound_shrine()' class='clickable' style='color: #E4E4E4'><span style='color: #BA61A4'>&gt;</span> COMPOUND</div>";
 	html+="<div onclick='render_exchange_shrine()' class='clickable' style='color: #E4E4E4'><span style='color: #BA61A4'>&gt;</span> EXCHANGE</div>";
@@ -2228,11 +2234,11 @@ function render_skill(selector,skill_name,args)
 	else $(selector).html(html);
 }
 
-function render_computer_network(selector)
+function render_computer_network(selector,type,num)
 {
 	var html="<div style='background-color: black; border: 5px solid gray; font-size: 24px; display: inline-block; padding: 20px; line-height: 24px; max-width: 240px;' class='buyitem'><div class='computernx'></div></div>";
 	$(selector).html(html);
-	render_computer($(".computernx"));
+	render_computer($(".computernx"),type,num);
 }
 
 function render_secondhands(type)
@@ -2750,7 +2756,7 @@ function render_useful_links()
 		html+='<div class="mt4 blockbutton" style="text-align: left; margin-bottom: 4px">A very practical website to play with Javascript in a Console.</div>';
 		html+="<a class='gamebutton eexternal' style='display: block; margin-bottom: 4px; border-color: #4B95B2' target='_blank' href='https://www.codecademy.com/learn/learn-javascript'>Code Academy: Javascript</a>";
 		html+='<div class="mt4 blockbutton" style="text-align: left; margin-bottom: 4px">Code Academy\'s Javascript course - If you want to learn Javascript properly first, Code Academy\'s refined course will hopefully be more helpful :]</div>';
-		html+="<a class='gamebutton eexternal' style='display: block; margin-bottom: 4px; border-color: #4B95B2' target='_blank' href='https://github.com/kaansoral/adventureland/blob/master/runner_functions.js'>Adventure Land's Github</a>";
+		html+="<a class='gamebutton eexternal' style='display: block; margin-bottom: 4px; border-color: #4B95B2' target='_blank' href='https://github.com/kaansoral/adventureland'>Adventure Land's Github</a>";
 		html+='<div class="mt4 blockbutton" style="text-align: left; margin-bottom: 4px">#TODO: Create a gallery of player\'s Github repos</div>';
 		html+="<a class='gamebutton eexternal' style='display: block; margin-bottom: 4px; border-color: #4B95B2' target='_blank' href='https://discord.gg/X3QyCJd'>#code_beginner on Discord</a>";
 
