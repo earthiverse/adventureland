@@ -102,6 +102,3 @@ RUN chmod +x node-server-entrypoint.sh
 # https://stackoverflow.com/a/67813516/28145
 
 # doing docker build -t al . && docker-compose up builds the image and starts the servers
-
-# This file sets up a message that will be displayed when we open the terminal in VSCode.
-COPY .devcontainer/welcome.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt

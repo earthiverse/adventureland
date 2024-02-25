@@ -1,4 +1,0 @@
-run theese commands and configure your secrets!
-cp useful/template.secrets.py secrets.py
-cp useful/template.variables.js node/variables.js
-cp useful/template.live_variables.js node/live_variables.js

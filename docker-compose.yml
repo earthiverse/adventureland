@@ -1,13 +1,14 @@
-
 version: "3.7"
 services:
   adventureland:
     build:
       context: ../
-      dockerfile: .devcontainer/Dockerfile
+      dockerfile: Dockerfile
 
-    # volumes:
-    # - ..:/workspace:cached
+    volumes:
+      - ../appserver/storage:/appserver/storage
+      - ./design:/adventureland/design
+      - ./node:/adventureland/node
 
     restart: always
     ports:
@@ -17,10 +18,12 @@ services:
   eu1:
     build:
       context: ../
-      dockerfile: .devcontainer/Dockerfile
-    
-    # volumes:
-    # - ..:/workspace:cached
+      dockerfile: Dockerfile
+
+    volumes:
+      - ../appserver/storage:/appserver/storage
+      - ./design:/adventureland/design
+      - ./node:/adventureland/node
 
     ports:
       - "8022:8022"
@@ -30,11 +33,13 @@ services:
   us1:
     build:
       context: ../
-      dockerfile: .devcontainer/Dockerfile
+      dockerfile: Dockerfile
 
-    # volumes:
-    # - ..:/workspace:cached
-    
+    volumes:
+      - ../appserver/storage:/appserver/storage
+      - ./design:/adventureland/design
+      - ./node:/adventureland/node
+
     ports:
       - "8023:8023"
     entrypoint: ["/adventureland/node-server-entrypoint.sh", "US", "I", "8023"]
