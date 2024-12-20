@@ -1,0 +1,31 @@
+{
+  "name": "@adventureland/game-server",
+  "version": "0.1.0",
+  "description": "The Game Server for AdventureLand - The Open Source Code MMORPG",
+  "keywords": [
+    "adventureland",
+    "code",
+    "mmorpg"
+  ],
+  "homepage": "https://github.com/kaansoral/adventureland#readme",
+  "bugs": {
+    "url": "https://github.com/kaansoral/adventureland/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaansoral/adventureland.git"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Kaan Soral",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@adventureland/types": "^0.1.0"
+  }
+}

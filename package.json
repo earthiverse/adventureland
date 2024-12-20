@@ -1,12 +1,8 @@
 {
   "name": "adventureland",
-  "version": "0.1.0",
-  "description": "The Open Source Code MMORPG",
-  "keywords": [
-    "adventureland",
-    "code",
-    "mmorpg"
-  ],
+  "private": true,
+  "type": "module",
+  "description": "AdventureLand - The Open Source Code MMORPG",
   "homepage": "https://github.com/kaansoral/adventureland#readme",
   "bugs": {
     "url": "https://github.com/kaansoral/adventureland/issues"
@@ -17,9 +13,20 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "author": "Kaan Soral",
-  "type": "module",
-  "main": "index.js",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@total-typescript/tsconfig": "^1.0.4",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.1"
+  },
   "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist node_modules/.tmp",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

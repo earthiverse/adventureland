@@ -1,0 +1,11 @@
+services:
+  central-server:
+    image: central-server
+    build:
+      context: .
+      dockerfile: packages/central-server/Dockerfile
+  game-server:
+    image: game-server
+    build:
+      context: .
+      dockerfile: packages/game-server/Dockerfile
