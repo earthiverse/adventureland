@@ -1,0 +1,7 @@
+services:
+  mongo:
+    image: mongo:8
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - "./services/mongodb/data:/data/db"
+      - "./services/mongodb/init:/docker-entrypoint-initdb.d"
