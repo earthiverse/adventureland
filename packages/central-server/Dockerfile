@@ -20,4 +20,4 @@ RUN npm install --omit=dev
 
 # Start
 USER node
-CMD ["node", "--experimental-strip-types", "--experimental-transform-types", "src/index.ts"]
+ENTRYPOINT ["node", "--experimental-strip-types", "--experimental-transform-types", "src/index.ts"]
