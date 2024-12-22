@@ -4,8 +4,12 @@ services:
     build:
       context: .
       dockerfile: packages/central-server/Dockerfile
+    env_file:
+      - .env
   game-server:
     image: game-server
     build:
       context: .
       dockerfile: packages/game-server/Dockerfile
+    env_file:
+      - .env
