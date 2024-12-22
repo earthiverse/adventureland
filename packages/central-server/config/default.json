@@ -1,0 +1,8 @@
+{
+  "central-server": {
+    "port": 8000
+  },
+  "database": {
+    "port": 27017
+  }
+}

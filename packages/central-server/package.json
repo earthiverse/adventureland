@@ -23,10 +23,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "config": "^3.3.12",
     "fastify": "^5.2.0",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "@adventureland/types": "^0.1.0"
+    "@adventureland/types": "^0.1.0",
+    "@types/config": "^3.3.5"
   }
 }

@@ -1,5 +1,7 @@
 import Fastify from "fastify";
+import config from "config";
 
+const port = config.get("centralServer.port");
 const fastify = Fastify();
 
 fastify.get("/", () => {
@@ -7,7 +9,7 @@ fastify.get("/", () => {
 });
 
 try {
-  await fastify.listen({ port: 8000, host: "0.0.0.0" });
+  await fastify.listen({ port, host: "0.0.0.0" });
 } catch (err) {
   console.error(err);
   process.exit(1);
