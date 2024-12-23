@@ -1,12 +1,16 @@
+import { signupHandler, SignupSchema } from "./routes/api/signup.js";
+import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
 
 const port = Config.get("centralServer.port");
-const fastify = Fastify();
+const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>();
 
 fastify.get("/", () => {
   return { hello: "world" };
 });
+
+fastify.post("/api/signup", { schema: SignupSchema }, signupHandler);
 
 try {
   await fastify.listen({ port, host: "0.0.0.0" });
@@ -15,15 +19,8 @@ try {
   process.exit(1);
 }
 
-console.log("Running!?");
-
-const interval = setInterval(() => {
-  console.log("Wow, running!");
-}, 60_000);
-
-// Stop
+// Shutdown the server when we receive a ctrl+c
 function gracefulShutdown() {
-  clearInterval(interval);
   fastify
     .close()
     .then(() => {

@@ -1,6 +1,6 @@
 /* global db */
 
-// Create the adventureland user
+// Create the user that we will authenticate with
 db.createUser({
   user: process.env.MONGO_USERNAME,
   pwd: process.env.MONGO_PASSWORD,

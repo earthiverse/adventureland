@@ -1,6 +1,12 @@
 {
   "central-server": {
-    "port": 8000
+    "port": 8000,
+    "jwt": {
+      "expiresIn": "6m"
+    },
+    "signup": {
+      "enabled": true
+    }
   },
   "database": {
     "port": 27017
