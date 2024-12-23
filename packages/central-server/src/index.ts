@@ -1,7 +1,7 @@
+import Config from "config";
 import Fastify from "fastify";
-import config from "config";
 
-const port = config.get("centralServer.port");
+const port = Config.get("centralServer.port");
 const fastify = Fastify();
 
 fastify.get("/", () => {
