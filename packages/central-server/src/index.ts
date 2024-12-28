@@ -1,4 +1,4 @@
-import { signupHandler, SignupSchema } from "./routes/api/signup.js";
+import { signupHandler, SignupSchema } from "./routes/api/signup.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
@@ -14,6 +14,7 @@ fastify.post("/api/signup", { schema: SignupSchema }, signupHandler);
 
 try {
   await fastify.listen({ port, host: "0.0.0.0" });
+  console.debug("We're live!");
 } catch (err) {
   console.error(err);
   process.exit(1);

@@ -3,5 +3,8 @@ services:
     image: mongo:8
     command: ["--replSet", "rs0", "--bind_ip_all"]
     volumes:
+      # TODO: Config is mountable, I think?
       - "./services/mongo/data:/data/db"
       - "./services/mongo/init:/docker-entrypoint-initdb.d"
+    env_file:
+      - .env

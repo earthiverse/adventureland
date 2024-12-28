@@ -11,11 +11,9 @@ declare module "config" {
       };
     };
     database: {
+      uri: string;
+      clientOptions: object;
       name: string;
-      host: string;
-      username: string;
-      password: string;
-      port: number;
     };
   }
 }

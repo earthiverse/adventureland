@@ -1,7 +1,7 @@
-import { Accounts } from "../../database.js";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.js";
+import { Accounts } from "../../database.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type } from "@sinclair/typebox";
-import { hashSync } from "bcryptjs";
+import bcryptjs from "bcryptjs";
 import config from "config";
 import { createSigner } from "fast-jwt";
 import { StatusCodes } from "http-status-codes";
@@ -50,7 +50,7 @@ export const signupHandler = async (
   try {
     await Accounts.insertOne({
       email,
-      password: hashSync(password),
+      password: bcryptjs.hashSync(password),
       characters: [],
       signupDate: new Date(),
     });

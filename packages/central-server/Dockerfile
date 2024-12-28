@@ -9,6 +9,7 @@ RUN apk add --no-cache jq
 WORKDIR /app
 
 # Copy code
+COPY packages/central-server/config ./config
 COPY packages/central-server/src ./src
 COPY packages/central-server/package.json .
 

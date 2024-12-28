@@ -2,16 +2,11 @@ import type { Account, Character } from "@adventureland/types";
 import Config from "config";
 import { MongoClient } from "mongodb";
 
-const host = Config.get("database.host");
-const port = Config.get("database.port");
-const username = Config.get("database.username");
-const password = Config.get("database.password");
+const uri = Config.get("database.uri");
 const name = Config.get("database.name");
+const options = Config.get("database.clientOptions");
 
-const client = new MongoClient(
-  `mongodb+srv://${username}:${password}@${host}:${port}/${name}`,
-);
-
+const client = new MongoClient(uri, options);
 await client.connect();
 
 const database = client.db(name);

@@ -1,14 +1,19 @@
 {
-  "central-server": {
+  "centralServer": {
     "port": 8000,
     "jwt": {
-      "expiresIn": "6m"
+      "expiresIn": "30 days"
     },
     "signup": {
       "enabled": true
     }
   },
   "database": {
-    "port": 27017
+    "uri": "mongodb://adventureland:adventureland@mongo:27017/adventureland",
+    "name": "adventureland",
+    "clientOptions": {
+      "appName": "Adventureland Central Server",
+      "directConnection": true
+    }
   }
 }

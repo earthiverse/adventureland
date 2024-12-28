@@ -1,3 +1,11 @@
 {
-  "plugins": ["@trivago/prettier-plugin-sort-imports"]
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "overrides": [
+    {
+      "files": "services/**/*.js",
+      "options": {
+        "trailingComma": "es5"
+      }
+    }
+  ]
 }
