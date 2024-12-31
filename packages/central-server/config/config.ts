@@ -6,6 +6,9 @@ declare module "config" {
         secret: string;
         expiresIn: string;
       };
+      login: {
+        enabled: boolean;
+      };
       signup: {
         enabled: boolean;
       };

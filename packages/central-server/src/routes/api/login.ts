@@ -6,15 +6,15 @@ import bcryptjs from "bcryptjs";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 
-const enabled = config.get("centralServer.signup.enabled");
+const enabled = config.get("centralServer.login.enabled");
 
-export const SignupSchema = {
+export const LoginSchema = {
   body: Type.Object({
     email: Type.String(),
     password: Type.String(),
   }),
   response: {
-    [StatusCodes.CREATED]: Type.Object({
+    [StatusCodes.OK]: Type.Object({
       token: Type.String(),
     }),
     [StatusCodes.FORBIDDEN]: Type.Object({
@@ -26,15 +26,15 @@ export const SignupSchema = {
   },
 };
 
-export const signupHandler = async (
-  request: FastifyRequestTypebox<typeof SignupSchema>,
-  reply: FastifyReplyTypebox<typeof SignupSchema>,
+export const loginHandler = async (
+  request: FastifyRequestTypebox<typeof LoginSchema>,
+  reply: FastifyReplyTypebox<typeof LoginSchema>,
 ) => {
   if (!enabled) {
     // Signups are disabled
     return reply
       .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Signups are currently disabled" });
+      .send({ error: "Logins are currently disabled" });
   }
 
   // Get the email and password from the request body
@@ -42,22 +42,30 @@ export const signupHandler = async (
 
   // Add the account to the database
   try {
-    await Accounts.insertOne({
-      id: crypto.randomUUID(),
-      email,
-      password: bcryptjs.hashSync(password),
-      signupDate: new Date(),
-      verified: false,
-    });
+    const account = await Accounts.findOne({ email });
+
+    if (account === null) {
+      // Account not found
+      return reply
+        .code(StatusCodes.FORBIDDEN)
+        .send({ error: "Invalid email or password" });
+    }
+
+    if (!bcryptjs.compareSync(password, account.password)) {
+      // Password is incorrect
+      return reply
+        .code(StatusCodes.FORBIDDEN)
+        .send({ error: "Invalid email or password" });
+    }
   } catch (error) {
     console.error(error); // TODO: Log the error
     return reply
       .code(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ error: "An unexpected error occurred during signup" });
+      .send({ error: "An unexpected error occurred during login" });
   }
 
   // Send the CSRF token
-  return reply.code(StatusCodes.CREATED).send({
+  return reply.code(StatusCodes.OK).send({
     token: signer({ email }),
   });
 };

@@ -20,7 +20,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env NODE_ENV=test npx playwright test"
   },
   "dependencies": {
     "@fastify/type-provider-typebox": "^5.1.0",
@@ -36,6 +36,9 @@
   },
   "devDependencies": {
     "@adventureland/types": "^0.1.0",
-    "@types/config": "^3.3.5"
+    "@faker-js/faker": "^9.3.0",
+    "@playwright/test": "^1.49.1",
+    "@types/config": "^3.3.5",
+    "cross-env": "^7.0.3"
   }
 }

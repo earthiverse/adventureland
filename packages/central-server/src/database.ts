@@ -11,8 +11,9 @@ await client.connect();
 
 const database = client.db(name);
 
-// Accounts have unique emails
+// Accounts have unique IDs and emails
 const accounts = database.collection<Account>("accounts");
+await accounts.createIndex({ id: 1 }, { unique: true });
 await accounts.createIndex({ email: 1 }, { unique: true });
 
 // Characters have unique IDs and names

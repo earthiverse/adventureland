@@ -1,8 +1,11 @@
 {
   "centralServer": {
-    "port": 8000,
+    "port": 80,
     "jwt": {
       "expiresIn": "30 days"
+    },
+    "login": {
+      "enabled": true
     },
     "signup": {
       "enabled": true

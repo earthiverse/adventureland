@@ -5,5 +5,5 @@
 ### Docker
 
 ```sh
-docker compose up
+docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.mongo.yml up
 ```
