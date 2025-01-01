@@ -1,4 +1,4 @@
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "./types.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type } from "@sinclair/typebox";
 import { StatusCodes } from "http-status-codes";
 

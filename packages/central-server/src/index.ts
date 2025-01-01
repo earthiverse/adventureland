@@ -1,6 +1,6 @@
 import { loginHandler, LoginSchema } from "./routes/api/login.ts";
 import { signupHandler, SignupSchema } from "./routes/api/signup.ts";
-import { statusHandler, StatusSchema } from "./routes/status.ts";
+import { statusHandler, StatusSchema } from "./routes/api/status.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
