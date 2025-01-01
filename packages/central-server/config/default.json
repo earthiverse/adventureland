@@ -1,9 +1,6 @@
 {
   "centralServer": {
     "port": 80,
-    "jwt": {
-      "expiresIn": "30 days"
-    },
     "login": {
       "enabled": true
     },
@@ -18,5 +15,8 @@
       "appName": "Adventureland Central Server",
       "directConnection": true
     }
+  },
+  "jwt": {
+    "expiresIn": "30 days"
   }
 }

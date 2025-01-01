@@ -1,14 +1,5 @@
 declare module "config" {
   interface IConfig {
-    centralServer: {
-      port: number;
-      login: {
-        enabled: boolean;
-      };
-      signup: {
-        enabled: boolean;
-      };
-    };
     database: {
       uri: string;
       clientOptions: object;

@@ -8,10 +8,8 @@ The config is set up using [node-config](https://github.com/node-config/node-con
 
 ```json
 {
-  "centralServer": {
-    "jwt": {
-      "secret": "Generate a random string and put it here"
-    }
+  "jwt": {
+    "secret": "Generate a random string and put it here"
   }
 }
 ```
