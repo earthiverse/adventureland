@@ -20,9 +20,11 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
+    "start": "node --experimental-strip-types --experimental-transform-types src/index.ts",
     "test": "cross-env NODE_ENV=test npx playwright test"
   },
   "dependencies": {
+    "@fastify/rate-limit": "^10.2.1",
     "@fastify/type-provider-typebox": "^5.1.0",
     "@sinclair/typebox": "^0.34.13",
     "@types/bcryptjs": "^2.4.6",

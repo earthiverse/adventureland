@@ -1,18 +1,45 @@
 import { loginHandler, LoginSchema } from "./routes/api/login.ts";
 import { signupHandler, SignupSchema } from "./routes/api/signup.ts";
+import { statusHandler, StatusSchema } from "./routes/status.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
 
 const port = Config.get("centralServer.port");
+
 const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>();
+await fastify.register(import("@fastify/rate-limit"));
 
-fastify.get("/", () => {
-  return { hello: "world" };
-});
-
-fastify.post("/api/signup", { schema: SignupSchema }, signupHandler);
-fastify.post("/api/login", { schema: LoginSchema }, loginHandler);
+fastify.get(
+  "/api/status",
+  {
+    schema: StatusSchema,
+    config: {
+      rateLimit: Config.get("centralServer.status.rateLimit"),
+    },
+  },
+  statusHandler,
+);
+fastify.post(
+  "/api/login",
+  {
+    schema: LoginSchema,
+    config: {
+      rateLimit: Config.get("centralServer.signup.rateLimit"),
+    },
+  },
+  loginHandler,
+);
+fastify.post(
+  "/api/signup",
+  {
+    schema: SignupSchema,
+    config: {
+      rateLimit: Config.get("centralServer.signup.rateLimit"),
+    },
+  },
+  signupHandler,
+);
 
 try {
   await fastify.listen({ port, host: "0.0.0.0" });

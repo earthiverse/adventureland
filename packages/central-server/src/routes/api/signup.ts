@@ -5,6 +5,7 @@ import { Type } from "@sinclair/typebox";
 import bcryptjs from "bcryptjs";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
+import { MongoServerError } from "mongodb";
 
 const enabled = config.get("centralServer.signup.enabled");
 
@@ -50,6 +51,13 @@ export const signupHandler = async (
       verified: false,
     });
   } catch (error) {
+    if (error instanceof MongoServerError) {
+      if (error.code === 11000) {
+        return reply
+          .code(StatusCodes.FORBIDDEN)
+          .send({ error: "An account with that email already exists" });
+      }
+    }
     console.error(error); // TODO: Log the error
     return reply
       .code(StatusCodes.INTERNAL_SERVER_ERROR)

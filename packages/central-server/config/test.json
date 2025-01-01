@@ -1,5 +1,35 @@
 {
+  "centralServer": {
+    "port": 8000,
+    "login": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
+    },
+    "signup": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
+    },
+    "status": {
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
+    }
+  },
   "database": {
-    "uri": "mongodb://adventureland:adventureland@localhost:27017/adventureland"
+    "uri": "mongodb://adventureland:adventureland@localhost:27017/adventureland",
+    "clientOptions": {
+      "appName": "Adventureland Central Server Tests",
+      "directConnection": true
+    }
+  },
+  "jwt": {
+    "secret": "test"
   }
 }
