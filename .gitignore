@@ -2,7 +2,7 @@
 .DS_Store
 
 # Docker
-docker-compose.override.yml
+docker-compose.*override.yml
 
 # Node
 node_modules
