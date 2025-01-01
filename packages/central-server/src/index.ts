@@ -25,7 +25,7 @@ fastify.post(
   {
     schema: LoginSchema,
     config: {
-      rateLimit: Config.get("centralServer.signup.rateLimit"),
+      rateLimit: Config.get("centralServer.login.rateLimit"),
     },
   },
   loginHandler,
