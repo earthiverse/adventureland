@@ -1,6 +1,7 @@
 import { Accounts } from "../../database.ts";
 import { signer } from "../../jwt.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
+import type { Account, AuthTokenPayload } from "@adventureland/types";
 import { Type } from "@sinclair/typebox";
 import bcryptjs from "bcryptjs";
 import config from "config";
@@ -42,14 +43,15 @@ export const signupHandler = async (
   const { email, password } = request.body;
 
   // Add the account to the database
+  const account: Account = {
+    id: crypto.randomUUID(),
+    email,
+    password: bcryptjs.hashSync(password),
+    signupDate: new Date(),
+    verified: false,
+  };
   try {
-    await Accounts.insertOne({
-      id: crypto.randomUUID(),
-      email,
-      password: bcryptjs.hashSync(password),
-      signupDate: new Date(),
-      verified: false,
-    });
+    await Accounts.insertOne(account);
   } catch (error) {
     if (error instanceof MongoServerError) {
       if (error.code === 11000) {
@@ -65,7 +67,10 @@ export const signupHandler = async (
   }
 
   // Send the CSRF token
+  const data: AuthTokenPayload = {
+    accountId: account.id,
+  };
   return reply.code(StatusCodes.CREATED).send({
-    token: signer({ email }),
+    token: signer(data),
   });
 };

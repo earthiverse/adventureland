@@ -1,6 +1,7 @@
 import { Accounts } from "../../database.ts";
 import { signer } from "../../jwt.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
+import type { Account, AuthTokenPayload } from "@adventureland/types";
 import { Type } from "@sinclair/typebox";
 import bcryptjs from "bcryptjs";
 import config from "config";
@@ -41,8 +42,9 @@ export const loginHandler = async (
   const { email, password } = request.body;
 
   // Add the account to the database
+  let account: Account | null;
   try {
-    const account = await Accounts.findOne({ email });
+    account = await Accounts.findOne({ email });
 
     if (account === null) {
       // Account not found
@@ -65,7 +67,10 @@ export const loginHandler = async (
   }
 
   // Send the CSRF token
+  const data: AuthTokenPayload = {
+    accountId: account.id,
+  };
   return reply.code(StatusCodes.OK).send({
-    token: signer({ email }),
+    token: signer(data),
   });
 };

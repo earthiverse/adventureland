@@ -1,5 +1,6 @@
 import { Accounts } from "../src/database.ts";
 import { verifier } from "../src/jwt.ts";
+import type { AuthToken } from "@adventureland/types";
 import { faker } from "@faker-js/faker";
 import { test, expect } from "@playwright/test";
 import { StatusCodes } from "http-status-codes";
@@ -21,9 +22,9 @@ test.describe.serial("Signup and Login", () => {
 
     // Token should be valid, with the email in it
     const token = ((await response.json()) as { token: string }).token;
-    const jwt = verifier(token) as { email: string };
+    const jwt = verifier(token) as AuthToken;
     expect(jwt).toBeTruthy();
-    expect(jwt.email).toBe(email);
+    expect(jwt.accountId).toBeTruthy();
   });
 
   test("Signing up two accounts with the same email is forbidden", async ({
@@ -84,10 +85,16 @@ test.describe.serial("Signup and Login", () => {
       data: { email, password },
     });
 
-    // Token should be valid, with the email in it
+    // Token should be valid
     const token = ((await response.json()) as { token: string }).token;
-    const jwt = verifier(token) as { email: string };
+    const jwt = verifier(token) as AuthToken;
     expect(jwt).toBeTruthy();
-    expect(jwt.email).toBe(email);
+
+    // Token should have the account ID in it
+    expect(jwt.accountId).toBeTruthy();
+
+    // Token should expire in the future
+    expect(jwt.exp).toBeTruthy();
+    expect(jwt.exp).toBeGreaterThan(Date.now() / 1000);
   });
 });
