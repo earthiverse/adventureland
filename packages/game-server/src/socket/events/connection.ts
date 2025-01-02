@@ -5,6 +5,7 @@ import type { AuthToken } from "@adventureland/types";
 import config from "config";
 
 const maxActiveCharacters = config.get("gameServer.maxActiveCharacters");
+const serverId = config.get("gameServer.id");
 
 export function setupConnection(gameServer: typeof GameServer) {
   // socket.io middleware that performs authentication and limit checks
@@ -53,7 +54,7 @@ export function setupConnection(gameServer: typeof GameServer) {
     // Set the character online
     await Characters.updateOne(
       { id: socket.data.character.id },
-      { $set: { online: "yes" } }, // TODO: Set to Server ID
+      { $set: { online: serverId } },
     );
 
     socket.on("disconnect", async () => {
