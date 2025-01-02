@@ -1,0 +1,15 @@
+{
+  "gameServer": {
+    "port": 8000
+  },
+  "database": {
+    "uri": "mongodb://adventureland:adventureland@localhost:27017/adventureland",
+    "clientOptions": {
+      "appName": "Adventureland Game Server (test)",
+      "directConnection": true
+    }
+  },
+  "jwt": {
+    "secret": "test"
+  }
+}

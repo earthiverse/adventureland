@@ -1,0 +1,16 @@
+{
+  "gameServer": {
+    "port": 80,
+    "maxActiveCharacters": 4,
+    "maxActiveMerchants": 1,
+    "maxCharacters": 16
+  },
+  "database": {
+    "uri": "mongodb://adventureland:adventureland@mongo:27017/adventureland",
+    "name": "adventureland",
+    "clientOptions": {
+      "appName": "Adventureland Game Server",
+      "directConnection": true
+    }
+  }
+}

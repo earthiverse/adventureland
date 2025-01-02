@@ -20,6 +20,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "node --experimental-strip-types --experimental-transform-types src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
