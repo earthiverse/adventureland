@@ -1,4 +1,4 @@
-export interface Account {
+export interface AccountData {
   /** Unique ID for the account */
   id: string;
   /** Email that the account belongs to */

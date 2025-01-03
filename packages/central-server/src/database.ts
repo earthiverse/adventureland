@@ -1,4 +1,4 @@
-import type { Account, Character } from "@adventureland/types";
+import type { AccountData, CharacterData } from "@adventureland/types";
 import Config from "config";
 import { MongoClient } from "mongodb";
 
@@ -12,12 +12,12 @@ await client.connect();
 const database = client.db(name);
 
 // Accounts have unique IDs and emails
-const accounts = database.collection<Account>("accounts");
+const accounts = database.collection<AccountData>("accounts");
 await accounts.createIndex({ id: 1 }, { unique: true });
 await accounts.createIndex({ email: 1 }, { unique: true });
 
 // Characters have unique IDs and names
-const characters = database.collection<Character>("characters");
+const characters = database.collection<CharacterData>("characters");
 await characters.createIndex({ id: 1 }, { unique: true });
 await characters.createIndex({ name: 1 }, { unique: true });
 

@@ -1,4 +1,4 @@
-import type { Account, Character } from "@adventureland/types";
+import type { AccountData, CharacterData } from "@adventureland/types";
 import Config from "config";
 import { MongoClient } from "mongodb";
 
@@ -11,8 +11,8 @@ await client.connect();
 
 const database = client.db(name);
 
-const accounts = database.collection<Account>("accounts");
-const characters = database.collection<Character>("characters");
+const accounts = database.collection<AccountData>("accounts");
+const characters = database.collection<CharacterData>("characters");
 
 export {
   client as Client,

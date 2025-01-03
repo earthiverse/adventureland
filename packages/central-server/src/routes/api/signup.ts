@@ -1,7 +1,7 @@
 import { Accounts } from "../../database.ts";
 import { signer } from "../../jwt.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import type { Account, AuthTokenPayload } from "@adventureland/types";
+import type { AccountData, AuthTokenPayload } from "@adventureland/types";
 import { Type } from "@sinclair/typebox";
 import bcryptjs from "bcryptjs";
 import config from "config";
@@ -43,7 +43,7 @@ export const signupHandler = async (
   const { email, password } = request.body;
 
   // Add the account to the database
-  const account: Account = {
+  const account: AccountData = {
     id: crypto.randomUUID(),
     email,
     password: bcryptjs.hashSync(password),

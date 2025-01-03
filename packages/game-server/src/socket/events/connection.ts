@@ -37,7 +37,7 @@ export function setupConnection(gameServer: typeof GameServer) {
       if (character.online !== undefined)
         return next(new Error("Character is online"));
 
-      // Add the character to the socket
+      // Add data to the socket
       socket.data.character = character;
     } catch (error) {
       console.error(error); // TODO: Log the error
