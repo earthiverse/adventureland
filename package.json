@@ -4,6 +4,9 @@
   "type": "module",
   "description": "AdventureLand - The Open Source Code MMORPG",
   "homepage": "https://github.com/kaansoral/adventureland#readme",
+  "engines": {
+    "node": "23"
+  },
   "bugs": {
     "url": "https://github.com/kaansoral/adventureland/issues"
   },
