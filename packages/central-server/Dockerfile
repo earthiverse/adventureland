@@ -1,6 +1,6 @@
 FROM node:23-alpine
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Install jq
 RUN apk add --no-cache jq
@@ -21,4 +21,4 @@ RUN npm install --omit=dev
 
 # Start
 USER node
-ENTRYPOINT ["node", "--experimental-strip-types", "--experimental-transform-types", "src/index.ts"]
+ENTRYPOINT ["node", "--experimental-transform-types", "src/index.ts"]

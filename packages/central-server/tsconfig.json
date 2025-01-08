@@ -7,7 +7,11 @@
     "playwright.config.ts"
   ],
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "noEmit": true
+     "target": "esnext",
+     "module": "nodenext",
+     "allowImportingTsExtensions": true,
+     "rewriteRelativeImportExtensions": true,
+     "verbatimModuleSyntax": true,
+     "noEmit": true
   }
 }
