@@ -1,15 +1,12 @@
-import data from "./data/data.ts";
 import { GameServer } from "./socket/index.ts";
+import { initializeState } from "./state.ts";
 import Config from "config";
 
 const port = Config.get("gameServer.port");
 
-// TODO: Register with the central server
+initializeState();
 
-// TODO: Initialize game
-for (const map in data.maps) {
-  // TODO: Initialize maps
-}
+// TODO: Register with the central server
 
 /** Game Loop */
 async function gameLoop() {
