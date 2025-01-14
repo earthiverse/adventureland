@@ -4,6 +4,16 @@ declare module "config" {
   interface IConfig {
     centralServer: {
       port: number;
+      createCharacter: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+        /** Minimum allowed character name length */
+        minLength: number;
+        /** Maximum allowed character name length */
+        maxLength: number;
+        /** Regex pattern character names must adhere to */
+        pattern: string;
+      };
       login: {
         enabled: boolean;
         rateLimit: RateLimitOptions;

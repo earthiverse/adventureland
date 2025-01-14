@@ -17,6 +17,7 @@ export const SignupSchema = {
   }),
   response: {
     [StatusCodes.CREATED]: Type.Object({
+      accountId: Type.String(),
       token: Type.String(),
     }),
     [StatusCodes.FORBIDDEN]: Type.Object({
@@ -33,7 +34,6 @@ export const signupHandler = async (
   reply: FastifyReplyTypebox<typeof SignupSchema>,
 ) => {
   if (!enabled) {
-    // Signups are disabled
     return reply
       .code(StatusCodes.FORBIDDEN)
       .send({ error: "Signups are currently disabled" });
@@ -71,6 +71,7 @@ export const signupHandler = async (
     accountId: account.id,
   };
   return reply.code(StatusCodes.CREATED).send({
+    accountId: account.id,
     token: signer(data),
   });
 };

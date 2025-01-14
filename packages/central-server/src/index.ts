@@ -1,3 +1,7 @@
+import {
+  createCharacterHandler,
+  CreateCharacterSchema,
+} from "./routes/api/createCharacter.ts";
 import { loginHandler, LoginSchema } from "./routes/api/login.ts";
 import { signupHandler, SignupSchema } from "./routes/api/signup.ts";
 import { statusHandler, StatusSchema } from "./routes/api/status.ts";
@@ -39,6 +43,16 @@ fastify.post(
     },
   },
   signupHandler,
+);
+fastify.post(
+  "/api/createCharacter",
+  {
+    schema: CreateCharacterSchema,
+    config: {
+      rateLimit: Config.get("centralServer.createCharacter.rateLimit"),
+    },
+  },
+  createCharacterHandler,
 );
 
 try {

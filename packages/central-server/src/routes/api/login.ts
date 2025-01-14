@@ -32,7 +32,6 @@ export const loginHandler = async (
   reply: FastifyReplyTypebox<typeof LoginSchema>,
 ) => {
   if (!enabled) {
-    // Signups are disabled
     return reply
       .code(StatusCodes.FORBIDDEN)
       .send({ error: "Logins are currently disabled" });

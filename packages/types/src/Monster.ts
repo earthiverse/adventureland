@@ -16,6 +16,8 @@ export interface MonsterData {
   attack: number;
   /** How fast the monster attacks (# attacks per second) */
   frequency: number;
+  /** Current monster level */
+  level: number;
 }
 
 export interface Monster extends MonsterData, Position, Movement {
