@@ -7,6 +7,9 @@ docker-compose.*override.yml
 # Node
 node_modules
 
+# Typescript
+*.tsbuildinfo
+
 # Playwright
 */**/test-results/
 */**/playwright-report/
