@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf --glob dist node_modules/.tmp */**/playwright-report */**/test-results",
+    "clean": "rimraf --glob */**/dist node_modules/.tmp */**/playwright-report */**/test-results",
     "lint": "eslint",
     "format": "prettier --write ."
   }
