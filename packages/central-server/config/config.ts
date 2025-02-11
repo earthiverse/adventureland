@@ -7,9 +7,9 @@ declare module "config" {
       createCharacter: {
         enabled: boolean;
         rateLimit: RateLimitOptions;
-        /** Minimum allowed character name length */
+        /** Minimum allowed character name length when creating */
         minLength: number;
-        /** Maximum allowed character name length */
+        /** Maximum allowed character name length when creating */
         maxLength: number;
         /** Regex pattern character names must adhere to */
         pattern: string;
@@ -17,6 +17,18 @@ declare module "config" {
       login: {
         enabled: boolean;
         rateLimit: RateLimitOptions;
+      };
+      renameCharacter: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+        /** Minimum allowed character name length when renaming */
+        minLength: number;
+        /** Maximum allowed character name length when renaming */
+        maxLength: number;
+        /** Cost (shells) to rename a character of the given length */
+        costs: { [T in number]: number };
+        /** Regex pattern character names must adhere to */
+        pattern: string;
       };
       signup: {
         enabled: boolean;

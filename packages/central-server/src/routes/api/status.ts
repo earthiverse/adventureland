@@ -2,6 +2,8 @@ import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type } from "@sinclair/typebox";
 import { StatusCodes } from "http-status-codes";
 
+// TODO: Add token
+
 export const StatusSchema = {
   response: {
     [StatusCodes.OK]: Type.Object({

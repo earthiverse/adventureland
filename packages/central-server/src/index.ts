@@ -3,6 +3,10 @@ import {
   CreateCharacterSchema,
 } from "./routes/api/createCharacter.ts";
 import { loginHandler, LoginSchema } from "./routes/api/login.ts";
+import {
+  renameCharacterHandler,
+  RenameCharacterSchema,
+} from "./routes/api/renameCharacter.ts";
 import { signupHandler, SignupSchema } from "./routes/api/signup.ts";
 import { statusHandler, StatusSchema } from "./routes/api/status.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
@@ -53,6 +57,16 @@ fastify.post(
     },
   },
   createCharacterHandler,
+);
+fastify.post(
+  "/api/renameCharacter",
+  {
+    schema: RenameCharacterSchema,
+    config: {
+      rateLimit: Config.get("centralServer.renameCharacter.rateLimit"),
+    },
+  },
+  renameCharacterHandler,
 );
 
 try {

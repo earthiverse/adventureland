@@ -1,7 +1,8 @@
-import { Accounts } from "../src/database.ts";
+import { Accounts, Characters } from "../src/database.ts";
 import { verifier } from "../src/jwt.ts";
 import type { CreateCharacterSchema } from "../src/routes/api/createCharacter.ts";
 import type { LoginSchema } from "../src/routes/api/login.ts";
+import type { RenameCharacterSchema } from "../src/routes/api/renameCharacter.ts";
 import type { SignupSchema } from "../src/routes/api/signup.ts";
 import type { AuthToken, CharacterType } from "@adventureland/types";
 import { faker } from "@faker-js/faker";
@@ -22,6 +23,9 @@ type LoginResponseForbidden = Static<
 >;
 type CreateCharacterResponseCreated = Static<
   (typeof CreateCharacterSchema.response)[StatusCodes.CREATED]
+>;
+type RenameCharacterResponseOk = Static<
+  (typeof RenameCharacterSchema.response)[StatusCodes.OK]
 >;
 
 test.describe.serial("Signup and Login", () => {
@@ -130,7 +134,8 @@ test.describe.serial("Signup and Create Character", () => {
   const password = faker.internet.password();
 
   test.afterAll(async () => {
-    await Accounts.deleteOne({ email });
+    await Accounts.deleteOne({ id: accountId });
+    await Characters.deleteMany({ accountId });
   });
 
   let token: string;
@@ -187,12 +192,12 @@ test.describe.serial("Signup and Create Character", () => {
     expect(jsonResponse2.message).toBeTruthy();
   });
 
+  const randomName = faker.helpers.fromRegExp("[a-zA-Z]{5,12}");
   test("Creating a new character returns new character details", async ({
     request,
   }) => {
     const randomType =
       characterTypes[Math.floor(Math.random() * characterTypes.length)];
-    const randomName = faker.helpers.fromRegExp("[a-zA-Z]{4,12}");
     const response = await request.post("/api/createCharacter", {
       data: {
         token,
@@ -203,7 +208,7 @@ test.describe.serial("Signup and Create Character", () => {
       },
     });
 
-    // Should be rejected with an error message
+    // Character details should be returned
     expect(response.status()).toBe(StatusCodes.CREATED);
     const jsonResponse =
       (await response.json()) as CreateCharacterResponseCreated;
@@ -211,5 +216,64 @@ test.describe.serial("Signup and Create Character", () => {
     expect(jsonResponse.character.accountId).toBe(accountId);
     expect(jsonResponse.character.name).toBe(randomName);
     expect(jsonResponse.character.type).toBe(randomType);
+  });
+
+  test("Cannot rename a character without a new name", async ({ request }) => {
+    const response = await request.post("/api/renameCharacter", {
+      data: {
+        token,
+        oldName: randomName,
+        // Missing newName
+      },
+    });
+
+    // Should be rejected with an error message
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST);
+    const jsonResponse = (await response.json()) as FastifyError;
+    expect(jsonResponse.message).toBeTruthy();
+
+    const response2 = await request.post("/api/renameCharacter", {
+      data: {
+        token,
+        oldName: randomName,
+        newName: "", // Empty newName
+      },
+    });
+
+    // Should be rejected with an error message
+    expect(response2.status()).toBe(StatusCodes.BAD_REQUEST);
+    const jsonResponse2 = (await response2.json()) as FastifyError;
+    expect(jsonResponse2.message).toBeTruthy();
+  });
+
+  const randomNewName = faker.helpers.fromRegExp("[a-zA-Z]{1,12}");
+  test("Renaming a character returns correct data", async ({ request }) => {
+    // Give the account some shells so the rename succeeds
+    await Accounts.updateOne({ email }, { $inc: { shells: 999999 } });
+
+    const response = await request.post("/api/renameCharacter", {
+      data: {
+        token,
+        oldName: randomName,
+        newName: randomNewName,
+      },
+    });
+
+    // Rename details should be returned
+    const jsonResponse = (await response.json()) as RenameCharacterResponseOk;
+    expect(response.status()).toBe(StatusCodes.OK);
+    expect(jsonResponse.oldName).toBe(randomName);
+    expect(jsonResponse.newName).toBe(randomNewName);
+    expect(jsonResponse.cost).toBeGreaterThan(0);
+
+    // Check that we deducted the correct amount of shells
+    expect(
+      (
+        await Accounts.findOne(
+          { email, shells: 999999 - jsonResponse.cost },
+          { projection: { _id: 1 } },
+        )
+      )?._id,
+    ).toBeDefined();
   });
 });
