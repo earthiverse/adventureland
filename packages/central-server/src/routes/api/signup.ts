@@ -13,7 +13,7 @@ const initialShells = config.get("centralServer.signup.initialShells");
 
 export const SignupSchema = {
   body: Type.Object({
-    email: Type.String(),
+    email: Type.String({ format: "email" }),
     password: Type.String(),
   }),
   response: {
