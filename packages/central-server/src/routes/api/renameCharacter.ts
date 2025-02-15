@@ -24,13 +24,11 @@ export const RenameCharacterSchema = {
     }),
   }),
   response: {
-    [StatusCodes.OK]: Type.Union([
-      Type.Object({
-        oldName: Type.String(),
-        newName: Type.String(),
-        cost: Type.Number(),
-      }),
-    ]),
+    [StatusCodes.OK]: Type.Object({
+      oldName: Type.String(),
+      newName: Type.String(),
+      cost: Type.Number(),
+    }),
     [StatusCodes.FORBIDDEN]: Type.Object({
       error: Type.String(),
     }),
