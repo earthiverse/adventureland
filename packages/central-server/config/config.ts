@@ -33,6 +33,8 @@ declare module "config" {
       signup: {
         enabled: boolean;
         rateLimit: RateLimitOptions;
+        /** How many shells to give a user on signup */
+        initialShells: number;
       };
       status: {
         rateLimit: RateLimitOptions;

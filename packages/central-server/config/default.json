@@ -47,7 +47,8 @@
       "rateLimit": {
         "max": 2,
         "timeWindow": 60000
-      }
+      },
+      "initialShells": 0
     },
     "status": {
       "rateLimit": {

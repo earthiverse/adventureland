@@ -9,6 +9,7 @@ import { StatusCodes } from "http-status-codes";
 import { MongoServerError } from "mongodb";
 
 const enabled = config.get("centralServer.signup.enabled");
+const initialShells = config.get("centralServer.signup.initialShells");
 
 export const SignupSchema = {
   body: Type.Object({
@@ -47,6 +48,7 @@ export const signupHandler = async (
     id: crypto.randomUUID(),
     email,
     password: bcryptjs.hashSync(password),
+    shells: initialShells,
     signupDate: new Date(),
     verified: false,
   };
