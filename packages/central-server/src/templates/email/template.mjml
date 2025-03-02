@@ -1,0 +1,8 @@
+<mjml>
+  {{ slots:head }}
+  <mj-body>
+    {{ slots:header }}
+    {{ slots:content }}
+    {{ slots:footer }}
+  </mj-body>
+</mjml>

@@ -11,4 +11,12 @@ export interface AccountData {
   signupDate: Date;
   /** Whether the email has been verified */
   verified: boolean;
+
+  /** If the player requests to change their email */
+  emailChange?: {
+    /** The new email they wish to use */
+    newEmail: string;
+    /** Verification code to check against */
+    verificationCode: string;
+  };
 }

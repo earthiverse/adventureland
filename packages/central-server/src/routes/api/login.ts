@@ -65,7 +65,7 @@ export const loginHandler = async (
       .send({ error: "An unexpected error occurred during login" });
   }
 
-  // Send the CSRF token
+  // Return the JWT token
   const data: AuthTokenPayload = {
     accountId: account.id,
   };

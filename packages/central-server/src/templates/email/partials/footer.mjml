@@ -1,0 +1,5 @@
+<mj-section>
+  <mj-column border-top="1px solid #999999">
+    <mj-text color="#AAAAAA">This email was sent automatically</mj-text>
+  </mj-column>
+</mj-section>

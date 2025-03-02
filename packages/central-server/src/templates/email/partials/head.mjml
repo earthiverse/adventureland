@@ -1,0 +1,11 @@
+<mj-head>
+  <mj-style>
+    @font-face { font-family: 'm5x7'; src:
+    url('https://raw.githubusercontent.com/bitDecayGames/Resources/master/fonts/pixel/linnsen/m5x7.woff2')
+    format('woff2'); } .emphasis { color: #000000; font-weight: bold; }
+  </mj-style>
+  <mj-attributes>
+    <mj-table font-family="m5x7" font-size="24px" color="#333" />
+    <mj-text font-family="m5x7" font-size="24px" color="#333" />
+  </mj-attributes>
+</mj-head>

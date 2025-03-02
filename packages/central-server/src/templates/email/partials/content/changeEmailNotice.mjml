@@ -1,0 +1,13 @@
+<mj-section>
+  <mj-column>
+    <mj-text font-size="36px" color="#333"
+      >Hello, <span class="emphasis">{{characterName}}</span></mj-text
+    >
+    <mj-text color="#333"
+      >Someone (hopefully you) requested your account email be changed to
+      <span class="emphasis">{{newEmail}}</span>. If you did not request an
+      email change, please reach out to
+      <a href="mailto:{{helpEmail}}">{{helpEmail}}</a>!</mj-text
+    >
+  </mj-column>
+</mj-section>

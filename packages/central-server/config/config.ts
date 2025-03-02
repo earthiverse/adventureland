@@ -4,6 +4,10 @@ declare module "config" {
   interface IConfig {
     centralServer: {
       port: number;
+      changeEmail: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+      };
       createCharacter: {
         enabled: boolean;
         rateLimit: RateLimitOptions;
@@ -39,11 +43,26 @@ declare module "config" {
       status: {
         rateLimit: RateLimitOptions;
       };
+      verifyEmail: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+        codeLength: number;
+      };
     };
     database: {
       uri: string;
       clientOptions: object;
       name: string;
+    };
+    discord: {
+      uri: string
+    };
+    email: {
+      transport: object;
+      defaults: object;
+      addressBook: {
+        help: string;
+      };
     };
     jwt: {
       secret: string;

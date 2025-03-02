@@ -7,5 +7,5 @@ services:
       - "./services/mongo/data:/data/db"
       # Initialization scripts when the docker container is created
       - "./services/mongo/init:/docker-entrypoint-initdb.d"
-    env_file:
-      - .env
+    ports:
+      - 27017:27017

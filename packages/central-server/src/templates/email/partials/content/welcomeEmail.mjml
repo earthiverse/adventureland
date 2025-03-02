@@ -1,0 +1,27 @@
+<mj-section>
+  <mj-column>
+    <mj-text font-size="36px" color="#000">Welcome!</mj-text>
+    <mj-text
+      >To get started, please verify your email by visiting the link
+      below.</mj-text
+    >
+    <mj-text><a href="{{verifyUrl}}">{{verifyUrl}}</a></mj-text>
+    <mj-text font-size="30px" color="#000">Resources:</mj-text>
+    <mj-table>
+      <tr>
+        <td style="width: 40px; height: 40px"></td>
+        <td>In-Game Documentation</td>
+      </tr>
+      <tr>
+        <td style="width: 40px; height: 40px">
+          <img
+            src="https://s.magecdn.com/social/tc-discord.svg"
+            width="30px"
+            height="30px"
+          />
+        </td>
+        <td>Discord</td>
+      </tr>
+    </mj-table>
+  </mj-column>
+</mj-section>

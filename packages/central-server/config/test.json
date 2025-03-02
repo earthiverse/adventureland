@@ -1,7 +1,28 @@
 {
   "centralServer": {
     "port": 8000,
+    "changeEmail": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
+    },
+    "createCharacter": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
+    },
     "login": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
+    },
+    "renameCharacter": {
       "enabled": true,
       "rateLimit": {
         "max": 1000,
@@ -20,6 +41,13 @@
         "max": 1000,
         "timeWindow": 1000
       }
+    },
+    "verifyEmail": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
     }
   },
   "database": {
@@ -27,6 +55,16 @@
     "clientOptions": {
       "appName": "Adventureland Central Server Tests",
       "directConnection": true
+    }
+  },
+  "email": {
+    "transport": {
+      "host": "localhost",
+      "port": 1025,
+      "secure": false
+    },
+    "defaults": {
+      "from": "\"Test User\" <testing@adventure.land>"
     }
   },
   "jwt": {

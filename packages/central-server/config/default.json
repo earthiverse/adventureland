@@ -1,6 +1,13 @@
 {
   "centralServer": {
     "port": 80,
+    "changeEmail": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1,
+        "timeWindow": 60000
+      }
+    },
     "createCharacter": {
       "enabled": true,
       "rateLimit": {
@@ -55,6 +62,14 @@
         "max": 2,
         "timeWindow": 60000
       }
+    },
+    "verifyEmail": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1,
+        "timeWindow": 60000
+      },
+      "codeLength": 32
     }
   },
   "database": {
@@ -63,6 +78,14 @@
     "clientOptions": {
       "appName": "Adventureland Central Server",
       "directConnection": true
+    }
+  },
+  "discord": {
+    "uri": "https://discord.gg/44yUVeU"
+  },
+  "email": {
+    "addressBook": {
+      "help": "hello@adventure.land"
     }
   },
   "jwt": {

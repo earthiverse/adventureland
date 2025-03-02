@@ -11,7 +11,7 @@ import type { Static } from "@sinclair/typebox";
 import type { FastifyError } from "fastify";
 import { StatusCodes } from "http-status-codes";
 
-type SignupResponseCreated = Static<
+export type SignupResponseCreated = Static<
   (typeof SignupSchema.response)[StatusCodes.CREATED]
 >;
 type SignupResponseForbidden = Static<
@@ -21,7 +21,7 @@ type LoginResponseOk = Static<(typeof LoginSchema.response)[StatusCodes.OK]>;
 type LoginResponseForbidden = Static<
   (typeof LoginSchema.response)[StatusCodes.FORBIDDEN]
 >;
-type CreateCharacterResponseCreated = Static<
+export type CreateCharacterResponseCreated = Static<
   (typeof CreateCharacterSchema.response)[StatusCodes.CREATED]
 >;
 type RenameCharacterResponseOk = Static<

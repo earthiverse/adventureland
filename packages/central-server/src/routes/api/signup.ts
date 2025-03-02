@@ -1,4 +1,9 @@
 import { Accounts } from "../../database.ts";
+import {
+  Emailer,
+  generateVerificationCode,
+  getVerifyUrl,
+} from "../../email.ts";
 import { signer } from "../../jwt.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AccountData, AuthTokenPayload } from "@adventureland/types";
@@ -9,6 +14,7 @@ import { StatusCodes } from "http-status-codes";
 import { MongoServerError } from "mongodb";
 
 const enabled = config.get("centralServer.signup.enabled");
+const helpEmail = config.get("email.addressBook.help");
 const initialShells = config.get("centralServer.signup.initialShells");
 
 export const SignupSchema = {
@@ -43,6 +49,8 @@ export const signupHandler = async (
   // Get the email and password from the request body
   const { email, password } = request.body;
 
+  const verificationCode = generateVerificationCode();
+
   // Add the account to the database
   const account: AccountData = {
     id: crypto.randomUUID(),
@@ -51,6 +59,10 @@ export const signupHandler = async (
     shells: initialShells,
     signupDate: new Date(),
     verified: false,
+    emailChange: {
+      newEmail: email,
+      verificationCode,
+    },
   };
   try {
     await Accounts.insertOne(account);
@@ -68,7 +80,29 @@ export const signupHandler = async (
       .send({ error: "An unexpected error occurred during signup" });
   }
 
-  // Send the CSRF token
+  // Send a welcome email
+  try {
+    await Emailer.sendMail({
+      to: email,
+      replyTo: helpEmail,
+      subject: "Welcome to Adventureland!",
+      templateLayoutName: "template",
+      templateLayoutSlots: {
+        head: "partials/head",
+        header: "partials/header",
+        content: "partials/content/welcomeEmail",
+        footer: "partials/footer",
+      },
+      templateData: {
+        helpEmail,
+        verifyUrl: getVerifyUrl(request, verificationCode),
+      },
+    });
+  } catch (error) {
+    console.error(error); // TODO: Log the error
+  }
+
+  // Return the JWT token
   const data: AuthTokenPayload = {
     accountId: account.id,
   };

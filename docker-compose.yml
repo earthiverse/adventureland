@@ -6,6 +6,11 @@ services:
       dockerfile: packages/central-server/Dockerfile
     env_file:
       - .env
+    volumes:
+      - ./node_modules:/app/node_modules
+      - ./packages/central-server/config:/app/config
+      - ./packages/central-server/src:/app/src
+    # TODO: Ports?
   game-server:
     image: game-server
     build:
@@ -13,3 +18,8 @@ services:
       dockerfile: packages/game-server/Dockerfile
     env_file:
       - .env
+    volumes:
+      - ./node_modules:/app/node_modules
+      - ./packages/game-server/config:/app/config
+      - ./packages/game-server/src:/app/src
+    # TODO: Ports?
