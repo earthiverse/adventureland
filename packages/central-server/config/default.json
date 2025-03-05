@@ -90,5 +90,8 @@
   },
   "jwt": {
     "expiresIn": "30 days"
+  },
+  "logging": {
+    "console": true
   }
 }

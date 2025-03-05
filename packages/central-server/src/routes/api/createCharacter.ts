@@ -1,5 +1,6 @@
 import { Characters } from "../../database.ts";
 import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken, CharacterData } from "@adventureland/types";
 import { Type } from "@sinclair/typebox";
@@ -89,11 +90,18 @@ export const createCharacterHandler = async (
           .send({ error: "A character with that name already exists" });
       }
     }
-    console.error(error); // TODO: Log the error
+    const message = "An unexpected error occurred during character creation";
+    Logger.error(message, error);
     return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      error: "An unexpected error occurred during character creation",
+      error: message,
     });
   }
+
+  Logger.info("Character Created", {
+    ip: request.ip,
+    accountId: jwt.accountId,
+    character,
+  });
 
   // Return the character data
   return reply.code(StatusCodes.CREATED).send({ character: characterData });

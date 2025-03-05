@@ -2,7 +2,7 @@ import { Accounts, Characters } from "../../src/database.ts";
 import type { ChangeEmailSchema } from "../../src/routes/api/changeEmail.ts";
 import type { VerifyEmailSchema } from "../../src/routes/api/verifyEmail.ts";
 import type { SignupResponseCreated } from "../api.spec.ts";
-import type { AccountData, AuthTokenPayload } from "@adventureland/types";
+import type { AuthTokenPayload } from "@adventureland/types";
 import { faker } from "@faker-js/faker";
 import { test, expect } from "@playwright/test";
 import type { Static } from "@sinclair/typebox";

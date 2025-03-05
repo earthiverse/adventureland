@@ -1,5 +1,6 @@
 import { Accounts } from "../../database.ts";
 import { signer } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AccountData, AuthTokenPayload } from "@adventureland/types";
 import { Type } from "@sinclair/typebox";
@@ -59,11 +60,17 @@ export const loginHandler = async (
         .send({ error: "Invalid email or password" });
     }
   } catch (error) {
-    console.error(error); // TODO: Log the error
+    Logger.error(error);
     return reply
       .code(StatusCodes.INTERNAL_SERVER_ERROR)
       .send({ error: "An unexpected error occurred during login" });
   }
+
+  // Log the login
+  Logger.info("Login", {
+    ip: request.ip,
+    accountId: account.id,
+  });
 
   // Return the JWT token
   const data: AuthTokenPayload = {

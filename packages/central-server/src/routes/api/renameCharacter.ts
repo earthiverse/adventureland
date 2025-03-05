@@ -1,5 +1,6 @@
 import { Accounts, Client, Characters } from "../../database.ts";
 import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken } from "@adventureland/types";
 import { Type } from "@sinclair/typebox";
@@ -101,7 +102,6 @@ export const renameCharacterHandler = async (
     }
 
     await session.commitTransaction();
-    console.info(`Character ${oldName} renamed to ${newName} (${cost} shells)`);
   } catch (error) {
     if (error instanceof MongoServerError) {
       if (error.code === 11000) {
@@ -110,13 +110,22 @@ export const renameCharacterHandler = async (
           .send({ error: `Another character is already named ${newName}` });
       }
     }
-    console.error(error); // TODO: Log the error
+    const message = "An unexpected error occurred during character renaming";
+    Logger.error(message, error);
     return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      error: "An unexpected error occurred during character renaming",
+      error: message,
     });
   } finally {
     await session.endSession();
   }
+
+  Logger.info("Character renamed", {
+    ip: request.ip,
+    accountId: jwt.accountId,
+    oldName,
+    newName,
+    cost,
+  });
 
   // Return the new name and how much it cost
   return reply.code(StatusCodes.OK).send({ oldName, newName, cost });

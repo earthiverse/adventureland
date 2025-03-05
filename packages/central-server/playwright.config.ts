@@ -38,5 +38,9 @@ export default defineConfig({
     command: "npm run start",
     url: "http://localhost:8000/api/status",
     reuseExistingServer: !process.env.CI,
+    gracefulShutdown: {
+      signal: "SIGINT",
+      timeout: 5000,
+    },
   },
 });

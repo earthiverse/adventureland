@@ -1,4 +1,5 @@
 import { Accounts } from "../../database.ts";
+import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type } from "@sinclair/typebox";
 import config from "config";
@@ -66,9 +67,15 @@ export const verifyEmailHandler = async (
       },
     );
 
+    // Log the verification
+    Logger.info("Email Verified", {
+      ip: request.ip,
+      accountId: account.id,
+    });
+
     return reply.code(StatusCodes.OK).send("Email verified"); // TODO: Redirect? HTML Page?
   } catch (error) {
-    console.error(error); // TODO: Log the error
+    Logger.error(error);
     return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: "An unexpected error occurred during email verification",
     });

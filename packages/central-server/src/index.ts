@@ -1,3 +1,4 @@
+import { Logger } from "./logger.ts";
 import {
   changeEmailHandler,
   ChangeEmailSchema,
@@ -13,7 +14,10 @@ import {
 } from "./routes/api/renameCharacter.ts";
 import { signupHandler, SignupSchema } from "./routes/api/signup.ts";
 import { statusHandler, StatusSchema } from "./routes/api/status.ts";
-import { verifyEmailHandler, VerifyEmailSchema } from "./routes/api/verifyEmail.ts";
+import {
+  verifyEmailHandler,
+  VerifyEmailSchema,
+} from "./routes/api/verifyEmail.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
@@ -96,9 +100,9 @@ fastify.get(
 
 try {
   await fastify.listen({ port, host: "0.0.0.0" });
-  console.debug("We're live!");
+  Logger.notice("Started!", { port });
 } catch (err) {
-  console.error(err); // TODO: Log the error
+  Logger.alert("Failed starting!", err);
   process.exit(1);
 }
 
@@ -107,7 +111,8 @@ function gracefulShutdown() {
   fastify
     .close()
     .then(() => {
-      console.debug("Bye bye!");
+      Logger.warning("Shutting down!");
+      Logger.end();
       process.exit(0);
     })
     .catch(console.error);

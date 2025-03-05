@@ -1,4 +1,5 @@
 import type { RateLimitOptions } from "@fastify/rate-limit";
+import type { SyslogTransportOptions } from "winston-syslog";
 
 declare module "config" {
   interface IConfig {
@@ -55,7 +56,7 @@ declare module "config" {
       name: string;
     };
     discord: {
-      uri: string
+      uri: string;
     };
     email: {
       transport: object;
@@ -67,6 +68,12 @@ declare module "config" {
     jwt: {
       secret: string;
       expiresIn: string;
+    };
+    logging: {
+      /** Whether or not to enable logging to console */
+      console: boolean;
+      /** If set, we will create a Syslog transport with these options */
+      syslog?: SyslogTransportOptions;
     };
   }
 }

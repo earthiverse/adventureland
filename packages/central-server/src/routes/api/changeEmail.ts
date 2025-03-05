@@ -1,6 +1,11 @@
 import { Accounts, Characters } from "../../database.ts";
-import { Emailer, generateVerificationCode, getVerifyUrl } from "../../email.ts";
+import {
+  Emailer,
+  generateVerificationCode,
+  getVerifyUrl,
+} from "../../email.ts";
 import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken, CharacterData } from "@adventureland/types";
 import { Type } from "@sinclair/typebox";
@@ -140,11 +145,17 @@ export const changeEmailHandler = async (
       },
     });
   } catch (error) {
-    console.error(error); // TODO: Log the error
+    const message = "An unexpected error occurred during email change";
+    Logger.error(message, error);
     return reply
       .code(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ error: "An unexpected error occurred during email change" });
+      .send({ error: message });
   }
+
+  Logger.info("Email Change Request", {
+    ip: request.ip,
+    accountId: jwt.accountId,
+  });
 
   // Return the new email
   return reply.code(StatusCodes.OK).send({ newEmail });
