@@ -1,4 +1,4 @@
-import { Characters } from "../../database.ts";
+import { Accounts, Characters } from "../../database.ts";
 import { verifier } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
@@ -66,9 +66,40 @@ export const createCharacterHandler = async (
   const { token, character } = request.body;
 
   // Check that the token they provided is valid
-  const jwt = verifier(token) as AuthToken | undefined;
-  if (jwt === undefined)
+  let jwt: AuthToken;
+  try {
+    jwt = verifier(token) as AuthToken;
+  } catch {
     return reply.code(StatusCodes.FORBIDDEN).send({ error: "Invalid token" });
+  }
+
+  // Check that they have enough slots to make a new character
+  try {
+    const account = await Accounts.findOne(
+      { id: jwt.accountId },
+      { projection: { slots: 1 } },
+    );
+    if (!account) {
+      throw new Error(
+        `ID ${jwt.accountId} was successfully authenticated via token, but the account could not be retrieved!`,
+      );
+    }
+
+    const numCharacters = await Characters.countDocuments({
+      accountId: jwt.accountId,
+    });
+    if (numCharacters >= account.slots) {
+      return reply
+        .code(StatusCodes.FORBIDDEN)
+        .send({ error: "You do not have any available slots" });
+    }
+  } catch (error) {
+    const message = "An unexpected error occurred during character creation";
+    Logger.error(message, error);
+    return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      error: message,
+    });
+  }
 
   // Add the character to the database
   const characterData: CharacterData = {

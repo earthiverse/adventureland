@@ -23,6 +23,13 @@ declare module "config" {
         enabled: boolean;
         rateLimit: RateLimitOptions;
       };
+      purchaseSlot: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+        /** Cost (shells) to add an additional slot */
+        cost: number;
+        maxSlots: number;
+      };
       renameCharacter: {
         enabled: boolean;
         rateLimit: RateLimitOptions;
@@ -38,8 +45,11 @@ declare module "config" {
       signup: {
         enabled: boolean;
         rateLimit: RateLimitOptions;
-        /** How many shells to give a user on signup */
-        initialShells: number;
+        /** What to give the account on signup */
+        initial: {
+          shells: number;
+          slots: number;
+        };
       };
       status: {
         rateLimit: RateLimitOptions;

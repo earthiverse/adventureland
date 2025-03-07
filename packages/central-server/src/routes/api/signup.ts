@@ -16,7 +16,7 @@ import { MongoServerError } from "mongodb";
 
 const enabled = config.get("centralServer.signup.enabled");
 const helpEmail = config.get("email.addressBook.help");
-const initialShells = config.get("centralServer.signup.initialShells");
+const initial = config.get("centralServer.signup.initial");
 
 export const SignupSchema = {
   body: Type.Object({
@@ -54,10 +54,10 @@ export const signupHandler = async (
 
   // Add the account to the database
   const account: AccountData = {
+    ...initial,
     id: crypto.randomUUID(),
     email,
     password: bcryptjs.hashSync(password),
-    shells: initialShells,
     signupDate: new Date(),
     verified: false,
     emailChange: {

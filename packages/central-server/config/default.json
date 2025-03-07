@@ -25,6 +25,15 @@
         "timeWindow": 60000
       }
     },
+    "purchaseSlot": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 5,
+        "timeWindow": 60000
+      },
+      "cost": 200,
+      "maxSlots": 16
+    },
     "renameCharacter": {
       "enabled": true,
       "rateLimit": {
@@ -55,7 +64,10 @@
         "max": 2,
         "timeWindow": 60000
       },
-      "initialShells": 0
+      "initial": {
+        "shells": 0,
+        "slots": 8
+      }
     },
     "status": {
       "rateLimit": {

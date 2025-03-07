@@ -25,13 +25,13 @@ export type VerifyEmailOk = Static<
 test.describe.serial("Change Email Specification", () => {
   const email = faker.internet.email();
   const password = faker.internet.password();
-  let accountId: string; // set in Signup
-  let token: string; // set in Signup
+  let accountId: string; // set in signup
+  let token: string; // set in signup
   const characterName = faker.helpers.fromRegExp("[a-zA-Z]{5,12}");
   const newEmail = faker.internet.email();
 
   test.afterAll(async () => {
-    await Accounts.deleteMany({ email: { $in: [email, newEmail] } });
+    await Accounts.deleteMany({ id: accountId });
     await Characters.deleteMany({ accountId });
   });
 
@@ -81,7 +81,7 @@ test.describe.serial("Change Email Specification", () => {
   });
 
   test("Forbidden to change email with a bad token", async ({ request }) => {
-    // Create a token with valid stuff, but
+    // Create a token with a valid ID, but not signed with the correct key
     const badSigner = createSigner({ key: "badkey" });
     const badPayload: AuthTokenPayload = {
       accountId,

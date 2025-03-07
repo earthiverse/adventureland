@@ -146,14 +146,13 @@ const characterTypes: CharacterType[] = [
 test.describe.serial("Signup and Create Character", () => {
   const email = faker.internet.email();
   const password = faker.internet.password();
+  let accountId: string; // set in signup
+  let token: string; // set in signup
 
   test.afterAll(async () => {
     await Accounts.deleteOne({ id: accountId });
     await Characters.deleteMany({ accountId });
   });
-
-  let token: string;
-  let accountId: string;
 
   test("Signup is OK", async ({ request }) => {
     const response = await request.post("/api/signup", {
@@ -263,7 +262,7 @@ test.describe.serial("Signup and Create Character", () => {
   const randomNewName = faker.helpers.fromRegExp("[a-zA-Z]{1,12}");
   test("Renaming a character returns correct data", async ({ request }) => {
     // Give the account some shells so the rename succeeds
-    await Accounts.updateOne({ email }, { $inc: { shells: 999999 } });
+    await Accounts.updateOne({ id: accountId }, { $inc: { shells: 999999 } });
 
     const response = await request.post("/api/renameCharacter", {
       data: {
@@ -284,7 +283,7 @@ test.describe.serial("Signup and Create Character", () => {
     expect(
       (
         await Accounts.findOne(
-          { email, shells: 999999 - jsonResponse.cost },
+          { id: accountId, shells: 999999 - jsonResponse.cost },
           { projection: { _id: 1 } },
         )
       )?._id,

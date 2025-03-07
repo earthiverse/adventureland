@@ -11,6 +11,8 @@ export interface AccountData {
   signupDate: Date;
   /** Whether the email has been verified */
   verified: boolean;
+  /** Maximum number of characters the account can have */
+  slots: number;
 
   /** If the player requests to change their email */
   emailChange?: {

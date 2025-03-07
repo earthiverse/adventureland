@@ -61,7 +61,7 @@ export const changeEmailHandler = async (
     );
     if (!currentEmail)
       throw new Error(
-        `ID ${jwt.accountId} was successfully authenticated via token, but the current email could not be retrieved!`,
+        `ID ${jwt.accountId} was successfully authenticated via token, but the account could not be retrieved!`,
       );
 
     // Return 400 if the email is the same

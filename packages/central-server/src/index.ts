@@ -9,6 +9,10 @@ import {
 } from "./routes/api/createCharacter.ts";
 import { loginHandler, LoginSchema } from "./routes/api/login.ts";
 import {
+  purchaseSlotHandler,
+  PurchaseSlotSchema,
+} from "./routes/api/purchaseSlot.ts";
+import {
   renameCharacterHandler,
   RenameCharacterSchema,
 } from "./routes/api/renameCharacter.ts";
@@ -76,6 +80,16 @@ fastify.post(
     },
   },
   createCharacterHandler,
+);
+fastify.post(
+  "/api/purchaseSlot",
+  {
+    schema: PurchaseSlotSchema,
+    config: {
+      rateLimit: Config.get("centralServer.purchaseSlot.rateLimit"),
+    },
+  },
+  purchaseSlotHandler,
 );
 fastify.post(
   "/api/renameCharacter",

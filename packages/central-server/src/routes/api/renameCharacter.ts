@@ -56,14 +56,20 @@ export const renameCharacterHandler = async (
     return reply.code(StatusCodes.OK).send({ oldName, newName, cost: 0 });
 
   // Check that the token they provided is valid
-  const jwt = verifier(token) as AuthToken | undefined;
-  if (jwt === undefined)
+  let jwt: AuthToken;
+  try {
+    jwt = verifier(token) as AuthToken;
+  } catch {
     return reply.code(StatusCodes.FORBIDDEN).send({ error: "Invalid token" });
+  }
 
   const cost = costs[newName.length];
   if (cost === undefined) {
+    Logger.error(
+      `The cost for renaming a character of length ${newName.length} is undefined.`,
+    );
     return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      error: `The cost for renaming a character of length ${newName.length} is undefined.`,
+      error: "An unexpected error occurred during character renaming",
     });
   }
 
