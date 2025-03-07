@@ -54,9 +54,12 @@ test.describe.serial("Signup and Login", () => {
 
   test("Cannot sign up with an invalid email", async ({ request }) => {
     const response = await request.post("/api/signup", {
-      data: { email: "not-a-proper-email@", password: faker.internet.password() },
+      data: {
+        email: "not-a-proper-email@",
+        password: faker.internet.password(),
+      },
     });
-    
+
     // Should be rejected with an error message
     expect(response.status()).toBe(StatusCodes.BAD_REQUEST);
     const jsonResponse = (await response.json()) as FastifyError;
