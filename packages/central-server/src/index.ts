@@ -31,6 +31,22 @@ const port = Config.get("centralServer.port");
 const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>();
 await fastify.register(import("@fastify/rate-limit"));
 
+fastify.setErrorHandler((error, request, reply) => {
+  // 429
+  if (error.statusCode === StatusCodes.TOO_MANY_REQUESTS) {
+    return reply.code(StatusCodes.TOO_MANY_REQUESTS).send({
+      error: "Too many requests. Slow down, please!",
+    });
+  }
+
+  // Log the error
+  Logger.error("Unhandled Error", { error, request });
+  reply.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+    error:
+      "It looks like something went VERY wrong. Please contact support with the current URL.",
+  });
+});
+
 fastify.get(
   "/api/status",
   {
