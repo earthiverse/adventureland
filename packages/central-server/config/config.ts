@@ -85,5 +85,9 @@ declare module "config" {
       /** If set, we will create a Syslog transport with these options */
       syslog?: SyslogTransportOptions;
     };
+    stripe: {
+      publishable_key: string;
+      secret_key: string;
+    };
   }
 }
