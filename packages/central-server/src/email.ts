@@ -1,3 +1,4 @@
+import { generateUrl } from "./url.ts";
 import Config from "config";
 import cryptoRandomString from "crypto-random-string";
 import type { FastifyRequest } from "fastify";
@@ -42,7 +43,7 @@ export function getVerifyUrl(
   request: FastifyRequest,
   verificationCode: string,
 ) {
-  return `${request.protocol}://${request.hostname}/api/verifyEmail/${verificationCode}`;
+  return generateUrl(request, `/api/verifyEmail/${verificationCode}`);
 }
 
 export { transport as Emailer };

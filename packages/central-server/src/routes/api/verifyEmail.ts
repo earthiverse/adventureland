@@ -16,7 +16,7 @@ export const VerifyEmailSchema = {
     }),
   }),
   response: {
-    [StatusCodes.OK]: Type.String({}),
+    [StatusCodes.OK]: Type.String(),
     [StatusCodes.FORBIDDEN]: Type.Object({
       error: Type.String(),
     }),
