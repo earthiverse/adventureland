@@ -22,6 +22,13 @@
         "timeWindow": 1000
       }
     },
+    "purchaseShells": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 1000,
+        "timeWindow": 1000
+      }
+    },
     "purchaseSlot": {
       "enabled": true,
       "rateLimit": {

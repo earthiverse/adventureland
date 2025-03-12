@@ -23,6 +23,17 @@ declare module "config" {
         enabled: boolean;
         rateLimit: RateLimitOptions;
       };
+      purchaseShells: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+        /**
+         * Cost (real money) to purchase the given amount of shells
+         * NOTE: This is in the currency's minor unit (e.g. cents for USD or CAD, yen for JPY)
+         **/
+        costs: { [T in number]: number };
+        /** The currency to use for costs */
+        currency: string;
+      };
       purchaseSlot: {
         enabled: boolean;
         rateLimit: RateLimitOptions;

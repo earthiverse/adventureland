@@ -9,6 +9,10 @@ import {
 } from "./routes/api/createCharacter.ts";
 import { loginHandler, LoginSchema } from "./routes/api/login.ts";
 import {
+  purchaseShellsHandler,
+  PurchaseShellsSchema,
+} from "./routes/api/purchaseShells.ts";
+import {
   purchaseSlotHandler,
   PurchaseSlotSchema,
 } from "./routes/api/purchaseSlot.ts";
@@ -22,9 +26,14 @@ import {
   verifyEmailHandler,
   VerifyEmailSchema,
 } from "./routes/api/verifyEmail.ts";
+import {
+  verifyPurchaseShellsHandler,
+  VerifyPurchaseShellsSchema,
+} from "./routes/api/verifyPurchaseShells.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
+import { StatusCodes } from "http-status-codes";
 
 const port = Config.get("centralServer.port");
 
@@ -42,12 +51,12 @@ fastify.setErrorHandler((error, request, reply) => {
 
   // 500
   if (error.statusCode === StatusCodes.INTERNAL_SERVER_ERROR) {
-  Logger.error("Unhandled Error", { error, request });
+    Logger.error("Unhandled Error", { error, request });
     return reply
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .send(
         new Error(
-      "It looks like something went VERY wrong. Please contact support with the current URL.",
+          "It looks like something went VERY wrong. Please contact support with the current URL.",
         ),
       );
   }
@@ -106,6 +115,16 @@ fastify.post(
   createCharacterHandler,
 );
 fastify.post(
+  "/api/purchaseShells",
+  {
+    schema: PurchaseShellsSchema,
+    config: {
+      rateLimit: Config.get("centralServer.purchaseShells.rateLimit"),
+    },
+  },
+  purchaseShellsHandler,
+);
+fastify.post(
   "/api/purchaseSlot",
   {
     schema: PurchaseSlotSchema,
@@ -134,6 +153,16 @@ fastify.get(
     },
   },
   verifyEmailHandler,
+);
+fastify.get(
+  "/api/verifyPurchaseShells/:stripeSessionId",
+  {
+    schema: VerifyPurchaseShellsSchema,
+    config: {
+      rateLimit: Config.get("centralServer.purchaseShells.rateLimit"),
+    },
+  },
+  verifyPurchaseShellsHandler,
 );
 
 try {

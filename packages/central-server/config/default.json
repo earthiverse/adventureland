@@ -25,6 +25,20 @@
         "timeWindow": 60000
       }
     },
+    "purchaseShells": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 5,
+        "timeWindow": 60000
+      },
+      "costs": {
+        "800": "1000",
+        "2160": "2500",
+        "9280": "10000",
+        "49600": "50000"
+      },
+      "currency": "USD"
+    },
     "purchaseSlot": {
       "enabled": true,
       "rateLimit": {
