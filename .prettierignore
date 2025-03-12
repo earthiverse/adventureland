@@ -1,1 +1,2 @@
-packages\central-server\src\templates\email\template.mjml
+**/*.mjml
+services/**/data/**

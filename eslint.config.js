@@ -51,6 +51,7 @@ export default tseslint.config(
   // Check JS files in services
   {
     files: ["packages/**/*.js", "services/**/*.js", "*.js"],
+    ignores: ["services/**/data/*"],
     extends: [tseslint.configs.disableTypeChecked],
   },
   // We're running everything using NodeJS
