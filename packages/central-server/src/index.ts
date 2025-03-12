@@ -34,17 +34,25 @@ await fastify.register(import("@fastify/rate-limit"));
 fastify.setErrorHandler((error, request, reply) => {
   // 429
   if (error.statusCode === StatusCodes.TOO_MANY_REQUESTS) {
+    Logger.debug("Rate limiting", { ip: request.ip, url: request.url });
     return reply.code(StatusCodes.TOO_MANY_REQUESTS).send({
       error: "Too many requests. Slow down, please!",
     });
   }
 
-  // Log the error
+  // 500
+  if (error.statusCode === StatusCodes.INTERNAL_SERVER_ERROR) {
   Logger.error("Unhandled Error", { error, request });
-  reply.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-    error:
+    return reply
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        new Error(
       "It looks like something went VERY wrong. Please contact support with the current URL.",
-  });
+        ),
+      );
+  }
+
+  return reply.send(error);
 });
 
 fastify.get(
