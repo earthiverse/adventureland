@@ -48,19 +48,22 @@ try {
 
 Logger.notice("Started!", { port });
 
-// Shutdown the server when we receive a ctrl+c
-function gracefulShutdown() {
+// Shutdown logic
+async function gracefulShutdown() {
   Logger.warning("Shutting down!");
-  fastify
-    .close()
-    .then(() => {
-      Logger.end();
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    });
+  let exitCode = 0;
+
+  try {
+    await fastify.close();
+  } catch (error) {
+    Logger.error("Error closing fastify", { error });
+    exitCode++;
+  }
+
+  Logger.end();
+  process.exit(exitCode);
 }
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 process.on("SIGTERM", gracefulShutdown);
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 process.on("SIGINT", gracefulShutdown);
