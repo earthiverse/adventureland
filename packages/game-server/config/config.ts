@@ -1,3 +1,4 @@
+import type { RateLimitOptions } from "@fastify/rate-limit";
 import type { SyslogTransportOptions } from "winston-syslog";
 
 declare module "config" {
@@ -6,16 +7,13 @@ declare module "config" {
       /** Unique ID for the current server */
       id: string;
       port: number;
-      /**
-       * How many characters an account can have active at one time
-       *
-       * NOTE: This does not include merchants
-       */
+      /** How many non-merchant characters an account can have active at one time */
       maxActiveCharacters: number;
       /** How many merchants an account can have online at one time */
       maxActiveMerchants: number;
-      /** How many characters an account can have */
-      maxCharacters: number;
+      status: {
+        rateLimit: RateLimitOptions;
+      };
     };
     database: {
       uri: string;

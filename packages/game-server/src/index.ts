@@ -1,5 +1,6 @@
 import { gameLoop } from "./gameLoop.ts";
 import { Logger } from "./logger.ts";
+import { setupApiRoutes } from "./routes/api.ts";
 import { GameServer } from "./socket/index.ts";
 import { initializeState } from "./state.ts";
 import Config from "config";
@@ -27,23 +28,32 @@ try {
   process.exit(1);
 }
 
-// TODO: Status API route
+// Setup routes
+setupApiRoutes(fastify);
 
 Logger.notice("Started!", { port });
 
-// Stop logic
-function gracefulShutdown() {
+// Shutdown logic
+async function gracefulShutdown() {
   Logger.warning("Shutting down!");
-  // TODO: Close API route
-  GameServer.close()
-    .then(() => {
+  let exitCode = 0;
+
+  try {
+    await GameServer.close();
+  } catch (error) {
+    Logger.error("Error closing socket.io", { error });
+    exitCode++;
+  }
+
+  try {
+    await fastify.close();
+  } catch (error) {
+    Logger.error("Error closing fastify", { error });
+    exitCode++;
+  }
+
       Logger.end();
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error(error);
-      process.exit(1);
-    });
+      process.exit(exitCode);
 }
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 process.on("SIGTERM", gracefulShutdown);
