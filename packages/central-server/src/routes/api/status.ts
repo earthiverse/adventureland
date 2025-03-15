@@ -4,11 +4,15 @@ import { StatusCodes } from "http-status-codes";
 
 // TODO: Add token
 
+const started = Date.now();
+
 export const StatusSchema = {
   response: {
     [StatusCodes.OK]: Type.Object({
       status: Type.String(),
       ip: Type.String(),
+      started: Type.Integer(),
+      uptime: Type.Integer(),
     }),
   },
 };
@@ -19,6 +23,7 @@ export const statusHandler = async (
 ) => {
   const status = "OK";
   const ip = request.ip;
+  const uptime = (Date.now() - started) / 1000;
 
-  return reply.code(StatusCodes.OK).send({ status, ip });
+  return reply.code(StatusCodes.OK).send({ status, ip, started, uptime });
 };
