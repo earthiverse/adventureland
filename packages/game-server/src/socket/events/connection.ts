@@ -1,5 +1,6 @@
 import { Characters } from "../../database.ts";
 import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
 import type { GameServer } from "../index.ts";
 import type { AuthToken } from "@adventureland/types";
 import config from "config";
@@ -14,8 +15,12 @@ export function setupConnection(gameServer: typeof GameServer) {
     const token = socket.handshake.auth.token as string | undefined;
     if (token === undefined) return next(new Error("No auth token provided"));
 
-    const jwt = verifier(token) as AuthToken | undefined;
-    if (jwt === undefined) return next(new Error("Invalid auth token"));
+    let jwt: AuthToken;
+    try {
+      jwt = verifier(token) as AuthToken;
+    } catch {
+      return next(new Error("Invalid auth token"));
+    }
 
     const characterId = socket.handshake.auth.characterId as string | undefined;
     if (characterId === undefined)
@@ -31,19 +36,34 @@ export function setupConnection(gameServer: typeof GameServer) {
       }
 
       const character = await Characters.findOne({ id: characterId });
-      if (character === null) return next(new Error("Character not found"));
-      if (character.accountId !== jwt.accountId)
+      if (character === null) {
+        Logger.info("Attempt to start a character which does not exist", {
+          ip: socket.handshake.address,
+          accountId: jwt.accountId,
+          characterId,
+        });
+        return next(new Error("Character not found"));
+      }
+      if (character.accountId !== jwt.accountId) {
+        Logger.info(
+          "Attempt to start a character which does not belong to the user",
+          {
+            ip: socket.handshake.address,
+            accountId: jwt.accountId,
+            characterId,
+          },
+        );
         return next(new Error("Character does not belong to you"));
+      }
       if (character.online !== undefined)
         return next(new Error("Character is online"));
 
       // Add data to the socket
       socket.data.character = character;
     } catch (error) {
-      console.error(error); // TODO: Log the error
-      return next(
-        new Error("An unexpected error occurred while authenticating"),
-      );
+      const message = "An unexpected error occurred while authentication";
+      Logger.error(message, { error });
+      return next(new Error(message));
     }
 
     return next();
@@ -56,6 +76,11 @@ export function setupConnection(gameServer: typeof GameServer) {
       { id: socket.data.character.id },
       { $set: { online: serverId } },
     );
+    Logger.info("Character started", {
+      ip: socket.handshake.address,
+      accountId: socket.data.character.accountId,
+      characterId: socket.data.character.id,
+    });
 
     socket.on("disconnect", async () => {
       // Set character offline
@@ -63,6 +88,11 @@ export function setupConnection(gameServer: typeof GameServer) {
         { id: socket.data.character.id },
         { $unset: { online: true } },
       );
+      Logger.info("Character stopped", {
+        ip: socket.handshake.address,
+        accountId: socket.data.character.accountId,
+        characterId: socket.data.character.id,
+      });
     });
   });
 }

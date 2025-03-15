@@ -41,22 +41,26 @@ setupApiRoutes(fastify);
 // Start server
 try {
   await fastify.listen({ port, host: "0.0.0.0" });
-  Logger.notice("Started!", { port });
-} catch (err) {
-  Logger.alert("Failed starting!", err);
+} catch (error) {
+  Logger.alert("Failed starting!", { error });
   process.exit(1);
 }
 
+Logger.notice("Started!", { port });
+
 // Shutdown the server when we receive a ctrl+c
 function gracefulShutdown() {
+  Logger.warning("Shutting down!");
   fastify
     .close()
     .then(() => {
-      Logger.warning("Shutting down!");
       Logger.end();
       process.exit(0);
     })
-    .catch(console.error);
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
 }
 process.on("SIGTERM", gracefulShutdown);
 process.on("SIGINT", gracefulShutdown);

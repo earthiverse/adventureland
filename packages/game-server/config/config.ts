@@ -1,3 +1,5 @@
+import type { SyslogTransportOptions } from "winston-syslog";
+
 declare module "config" {
   interface IConfig {
     gameServer: {
@@ -22,6 +24,12 @@ declare module "config" {
     };
     jwt: {
       secret: string;
+    };
+    logging: {
+      /** Whether or not to enable logging to console */
+      console: boolean;
+      /** If set, we will create a Syslog transport with these options */
+      syslog?: SyslogTransportOptions;
     };
   }
 }

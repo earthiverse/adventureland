@@ -12,5 +12,8 @@
       "appName": "Adventureland Game Server",
       "directConnection": true
     }
+  },
+  "logging": {
+    "console": true
   }
 }

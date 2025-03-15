@@ -1,4 +1,5 @@
 import { gameLoop } from "./gameLoop.ts";
+import { Logger } from "./logger.ts";
 import { GameServer } from "./socket/index.ts";
 import { initializeState } from "./state.ts";
 import Config from "config";
@@ -10,17 +11,33 @@ initializeState();
 // TODO: Register with the central server
 
 // Main game server logic
-void gameLoop()
+void gameLoop();
 
 // Start listening for players
-GameServer.listen(port);
-console.debug("We're live!");
+try {
+  GameServer.listen(port);
+} catch (error) {
+  Logger.alert("Failed starting!", { error });
+  process.exit(1);
+}
+
+// TODO: Status API route
+
+Logger.notice("Started!", { port });
 
 // Stop logic
-async function gracefulShutdown() {
-  await GameServer.close();
-  console.debug("Bye bye!");
-  process.exit(0);
+function gracefulShutdown() {
+  Logger.warning("Shutting down!");
+  // TODO: Close API route
+  GameServer.close()
+    .then(() => {
+      Logger.end();
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error(error);
+      process.exit(1);
+    });
 }
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 process.on("SIGTERM", gracefulShutdown);
