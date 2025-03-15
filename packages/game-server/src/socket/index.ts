@@ -13,7 +13,9 @@ const GameServer = new Server<
   InterServerEvents,
   SocketData
 >({
-  /* options */
+  cors: {
+    origin: "*",
+  },
 });
 
 setupConnection(GameServer);
