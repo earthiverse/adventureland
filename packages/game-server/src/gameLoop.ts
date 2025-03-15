@@ -1,12 +1,19 @@
 import { Logger } from "./logger.ts";
 
-/** Game Loop */
-export async function gameLoop() {
+/**
+ * Game logic
+ * @param initial Whether this loop is the first loop or not
+ */
+export async function gameLoop(initial: boolean) {
   try {
     // TODO: Find monsters that aren't moving, but should be, and update them
   } catch (error) {
-    Logger.error("Error in game loop", { error });
+    if (initial) {
+      throw error;
+    } else {
+      Logger.error("Error in game loop", { error });
+    }
   } finally {
-    setTimeout(() => void gameLoop(), 1000 / 60); // TODO: Move to config
+    setTimeout(() => void gameLoop(false), 1000 / 60); // TODO: Move to config
   }
 }

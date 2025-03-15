@@ -14,8 +14,13 @@ initializeState();
 
 // TODO: Register with the central server
 
-// Main game server logic
-void gameLoop();
+// Start game server logic
+try {
+  await gameLoop(true);
+} catch (error) {
+  Logger.alert("Failed executing initial game loop!", { error });
+  process.exit(1);
+}
 
 try {
   // Listen for websockets
