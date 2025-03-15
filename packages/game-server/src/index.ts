@@ -3,8 +3,11 @@ import { Logger } from "./logger.ts";
 import { GameServer } from "./socket/index.ts";
 import { initializeState } from "./state.ts";
 import Config from "config";
+import Fastify from "fastify";
 
 const port = Config.get("gameServer.port");
+
+const fastify = Fastify();
 
 initializeState();
 
@@ -13,9 +16,12 @@ initializeState();
 // Main game server logic
 void gameLoop();
 
-// Start listening for players
 try {
-  GameServer.listen(port);
+  // Listen for websockets
+  GameServer.listen(fastify.server);
+
+  // Listen for API requests
+  await fastify.listen({ port, host: "0.0.0.0" });
 } catch (error) {
   Logger.alert("Failed starting!", { error });
   process.exit(1);
