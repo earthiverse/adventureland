@@ -1,4 +1,7 @@
 import { Logger } from "./logger.ts";
+import Config from "config";
+
+const serverId = Config.get("gameServer.id");
 
 /**
  * Game logic
@@ -11,7 +14,7 @@ export async function gameLoop(initial: boolean) {
     if (initial) {
       throw error;
     } else {
-      Logger.error("Error in game loop", { error });
+      Logger.error("Error in game loop", { serverId, error });
     }
   } finally {
     setTimeout(() => void gameLoop(false), 1000 / 60); // TODO: Move to config
