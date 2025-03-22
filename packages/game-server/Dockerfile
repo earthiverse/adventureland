@@ -22,3 +22,6 @@ RUN npm install --omit=dev
 # Start
 USER node
 ENTRYPOINT ["node", "--experimental-transform-types", "src/index.ts"]
+
+HEALTHCHECK --interval=60s --timeout=5s --start-period=30s --start-interval=5s --retries=2 \
+    CMD wget -q -O - http://127.0.0.1/api/status | grep -q '"status":"OK"' || exit 1

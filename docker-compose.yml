@@ -17,6 +17,9 @@ services:
     build:
       context: .
       dockerfile: packages/game-server/Dockerfile
+    depends_on:
+      central-server:
+        condition: service_healthy
     env_file:
       - .env
     volumes:
