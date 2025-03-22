@@ -8,6 +8,11 @@
         "timeWindow": 60000
       }
     },
+    "checkLoop": {
+      "interval": 30000,
+      "timeout": 10000,
+      "numChecksBeforeUnhealthy": 4
+    },
     "createCharacter": {
       "enabled": true,
       "rateLimit": {

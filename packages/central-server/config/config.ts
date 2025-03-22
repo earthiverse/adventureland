@@ -9,6 +9,14 @@ declare module "config" {
         enabled: boolean;
         rateLimit: RateLimitOptions;
       };
+      checkLoop: {
+        /** ms between each run of the healthcheck loop */
+        interval: number;
+        /** ms to wait before a timeout connecting to the game server */
+        timeout: number;
+        /** Number of failed checks before we mark the server as unhealthy */
+        numChecksBeforeUnhealthy: number;
+      };
       createCharacter: {
         enabled: boolean;
         rateLimit: RateLimitOptions;

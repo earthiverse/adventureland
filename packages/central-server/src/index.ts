@@ -1,3 +1,4 @@
+import { checkLoop } from "./checkLoop.ts";
 import { Logger } from "./logger.ts";
 import { setupApiRoutes } from "./routes/api.ts";
 import { setupServerApiRoutes } from "./routes/serverApi.ts";
@@ -45,6 +46,14 @@ try {
   await fastify.listen({ port, host: "0.0.0.0" });
 } catch (error) {
   Logger.alert("Failed starting!", { error });
+  process.exit(1);
+}
+
+// Start health check loop
+try {
+  await checkLoop(true);
+} catch (error) {
+  Logger.alert("Failed executing initial health loop!", { error });
   process.exit(1);
 }
 
