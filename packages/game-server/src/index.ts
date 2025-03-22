@@ -1,5 +1,9 @@
 import { gameLoop } from "./gameLoop.ts";
 import { Logger } from "./logger.ts";
+import {
+  registerWithCentralServer,
+  unregisterWithCentralServer,
+} from "./registration.ts";
 import { setupApiRoutes } from "./routes/api.ts";
 import { GameServer } from "./socket/index.ts";
 import { initializeState } from "./state.ts";
@@ -12,8 +16,6 @@ const fastify = Fastify();
 
 initializeState();
 
-// TODO: Register with the central server
-
 // Start game server logic
 try {
   await gameLoop(true);
@@ -21,6 +23,9 @@ try {
   Logger.alert("Failed executing initial game loop!", { error });
   process.exit(1);
 }
+
+// Setup routes
+setupApiRoutes(fastify);
 
 try {
   // Listen for websockets
@@ -30,11 +35,15 @@ try {
   await fastify.listen({ port, host: "0.0.0.0" });
 } catch (error) {
   Logger.alert("Failed starting!", { error });
+  Logger.end();
   process.exit(1);
 }
 
-// Setup routes
-setupApiRoutes(fastify);
+// Register with the central server
+if (!(await registerWithCentralServer())) {
+  Logger.end();
+  process.exit(1);
+}
 
 Logger.notice("Started!", { port });
 
@@ -43,22 +52,27 @@ async function gracefulShutdown() {
   Logger.warning("Shutting down!");
   let exitCode = 0;
 
+  // Unregister with the central server
+  if (!(await unregisterWithCentralServer())) {
+    exitCode += 1;
+  }
+
   try {
     await GameServer.close();
   } catch (error) {
     Logger.error("Error closing socket.io", { error });
-    exitCode++;
+    exitCode += 2;
   }
 
   try {
     await fastify.close();
   } catch (error) {
     Logger.error("Error closing fastify", { error });
-    exitCode++;
+    exitCode += 4;
   }
 
-      Logger.end();
-      process.exit(exitCode);
+  Logger.end();
+  process.exit(exitCode);
 }
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 process.on("SIGTERM", gracefulShutdown);

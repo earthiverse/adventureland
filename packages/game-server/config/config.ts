@@ -3,9 +3,16 @@ import type { SyslogTransportOptions } from "winston-syslog";
 
 declare module "config" {
   interface IConfig {
+    centralServer: {
+      /** Url to access central server (scheme, hostname, and port) */
+      url: string;
+    };
     gameServer: {
       /** Unique ID for the current server */
       id: string;
+      /** Url to access server (scheme and hostname) */
+      url: string;
+      /** Port to access server */
       port: number;
       /** How many non-merchant characters an account can have active at one time */
       maxActiveCharacters: number;

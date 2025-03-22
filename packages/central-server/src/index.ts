@@ -1,5 +1,6 @@
 import { Logger } from "./logger.ts";
 import { setupApiRoutes } from "./routes/api.ts";
+import { setupServerApiRoutes } from "./routes/serverApi.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
@@ -37,6 +38,7 @@ fastify.setErrorHandler((error, request, reply) => {
 
 // Setup routes
 setupApiRoutes(fastify);
+setupServerApiRoutes(fastify);
 
 // Start server
 try {
