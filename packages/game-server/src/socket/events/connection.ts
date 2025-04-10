@@ -12,6 +12,8 @@ export function setupConnection(gameServer: typeof GameServer) {
   // socket.io middleware that performs authentication and limit checks
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   gameServer.use(async (socket, next) => {
+    // TODO: Add /comm like support
+
     const token = socket.handshake.auth.token as string | undefined;
     if (token === undefined) return next(new Error("No auth token provided"));
 

@@ -7,6 +7,11 @@
   - Delete Character
   - Toggle Privacy
 
+### Skins
+
+- Skin
+- Armor C:\Users\Hyprk\Code\adventureland.worktrees\original\images\cosmetics\armors\marmor5.png
+
 ## Dev
 
 ### Docker

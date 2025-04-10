@@ -1,0 +1,15 @@
+{
+  "extends": "@total-typescript/tsconfig/tsc/no-dom/library",
+  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "target": "esnext",
+    "module": "nodenext",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true
+  }
+}
