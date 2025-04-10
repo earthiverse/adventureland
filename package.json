@@ -22,12 +22,12 @@
   "devDependencies": {
     "@total-typescript/tsconfig": "^1.0.4",
     "@trivago/prettier-plugin-sort-imports": "^5.2.0",
-    "@types/node": "^22.10.2",
+    "@types/node": "^22.14.0",
     "eslint": "^9.24.0",
-    "eslint-plugin-vue": "^9.32.0",
+    "eslint-plugin-vue": "^10.0.0",
     "globals": "^16.0.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.7.2",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.1",
     "vue-eslint-parser": "^10.1.3"
   },
