@@ -1,11 +1,19 @@
 // @ts-check
-import eslint from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
+import ESLintJs from "@eslint/js";
+import TypescriptESLintParser from "@typescript-eslint/parser";
+import ESLintPluginVue from "eslint-plugin-vue";
+import Globals from "globals";
+import TypescriptESLint from "typescript-eslint";
+import VueEslintParser from "vue-eslint-parser";
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+export default TypescriptESLint.config(
+  ESLintJs.configs.recommended,
+  ...TypescriptESLint.configs.recommendedTypeChecked,
+  ...ESLintPluginVue.configs["flat/essential"],
+  // Generated Code
+  {
+    ignores: ["**/dist/*"],
+  },
   // Central Server
   {
     files: ["packages/central-server/**/*.ts"],
@@ -34,6 +42,26 @@ export default tseslint.config(
       "@typescript-eslint/switch-exhaustiveness-check": "error",
     },
   },
+  // Game
+  {
+    files: ["packages/game/**/*.ts"],
+    languageOptions: {
+      parserOptions: {
+        project: ["packages/game/tsconfig.json"],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
+    files: ["packages/game/**/*.vue"],
+    languageOptions: {
+      parser: VueEslintParser,
+      parserOptions: {
+        parser: TypescriptESLintParser,
+      },
+    },
+    extends: [TypescriptESLint.configs.disableTypeChecked],
+  },
   // Types
   {
     files: ["packages/types/**/*.ts"],
@@ -52,13 +80,13 @@ export default tseslint.config(
   {
     files: ["packages/**/*.js", "services/**/*.js", "*.js"],
     ignores: ["services/**/data/*"],
-    extends: [tseslint.configs.disableTypeChecked],
+    extends: [TypescriptESLint.configs.disableTypeChecked],
   },
   // We're running everything using NodeJS
   {
     languageOptions: {
       globals: {
-        ...globals.node,
+        ...Globals.node,
       },
     },
   },
