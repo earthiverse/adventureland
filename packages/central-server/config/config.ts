@@ -1,3 +1,4 @@
+import type { FastifyCorsOptions } from "@fastify/cors";
 import type { RateLimitOptions } from "@fastify/rate-limit";
 import type { SyslogTransportOptions } from "winston-syslog";
 
@@ -17,6 +18,7 @@ declare module "config" {
         /** Number of failed checks before we mark the server as unhealthy */
         numChecksBeforeUnhealthy: number;
       };
+      cors: FastifyCorsOptions
       createCharacter: {
         enabled: boolean;
         rateLimit: RateLimitOptions;

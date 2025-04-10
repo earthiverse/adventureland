@@ -13,6 +13,9 @@
       "timeout": 10000,
       "numChecksBeforeUnhealthy": 4
     },
+    "cors": {
+      "origin": "*"
+    },
     "createCharacter": {
       "enabled": true,
       "rateLimit": {

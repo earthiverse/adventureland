@@ -7,10 +7,14 @@ import Config from "config";
 import Fastify from "fastify";
 import { StatusCodes } from "http-status-codes";
 
-const port = Config.get("centralServer.port");
-
 const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>();
 await fastify.register(import("@fastify/rate-limit"));
+fastify.register(import("@fastify/cors"), {
+  methods: ["GET", "POST"], // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  credentials: true,
+  ...Config.get("centralServer.cors"),
+});
 
 // Setup error handler
 fastify.setErrorHandler((error, request, reply) => {
@@ -42,6 +46,7 @@ setupApiRoutes(fastify);
 setupServerApiRoutes(fastify);
 
 // Start server
+const port = Config.get("centralServer.port");
 try {
   await fastify.listen({ port, host: "0.0.0.0" });
 } catch (error) {
