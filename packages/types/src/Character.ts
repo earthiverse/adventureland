@@ -10,7 +10,7 @@ export interface CharacterData {
   /** Character name (can be changed) */
   name: string;
   /** When the character was created */
-  createdDate: Date;
+  createdDate: number;
   /** If the character is online, this is the server it is connected to */
   online?: string;
   /** What type of character it is */

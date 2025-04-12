@@ -106,7 +106,7 @@ export const createCharacterHandler = async (
     accountId: jwt.accountId,
     id: crypto.randomUUID(),
     name: character.name,
-    createdDate: new Date(),
+    createdDate: Date.now(),
     type: character.type,
     level: 1,
     xp: 0,
