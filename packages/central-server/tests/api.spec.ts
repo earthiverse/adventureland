@@ -1,6 +1,7 @@
 import { Accounts, Characters } from "../src/database.ts";
 import { verifier } from "../src/jwt.ts";
 import type { CreateCharacterSchema } from "../src/routes/api/createCharacter.ts";
+import type { GetCharactersSchema } from "../src/routes/api/getCharacters.ts";
 import type { LoginSchema } from "../src/routes/api/login.ts";
 import type { RenameCharacterSchema } from "../src/routes/api/renameCharacter.ts";
 import type { SignupSchema } from "../src/routes/api/signup.ts";
@@ -26,6 +27,9 @@ export type CreateCharacterResponseCreated = Static<
 >;
 type RenameCharacterResponseOk = Static<
   (typeof RenameCharacterSchema.response)[StatusCodes.OK]
+>;
+type GetCharactersResponseOk = Static<
+  (typeof GetCharactersSchema.response)[StatusCodes.OK]
 >;
 
 test.describe.serial("Signup and Login", () => {
@@ -206,11 +210,12 @@ test.describe.serial("Signup and Create Character", () => {
   });
 
   const randomName = faker.helpers.fromRegExp("[a-zA-Z]{5,12}");
+  const randomType =
+    characterTypes[Math.floor(Math.random() * characterTypes.length)];
+  let characterId: string;
   test("Creating a new character returns new character details", async ({
     request,
   }) => {
-    const randomType =
-      characterTypes[Math.floor(Math.random() * characterTypes.length)];
     const response = await request.post("/api/createCharacter", {
       data: {
         token,
@@ -229,6 +234,8 @@ test.describe.serial("Signup and Create Character", () => {
     expect(jsonResponse.character.accountId).toBe(accountId);
     expect(jsonResponse.character.name).toBe(randomName);
     expect(jsonResponse.character.type).toBe(randomType);
+
+    characterId = jsonResponse.character.id;
   });
 
   test("Cannot rename a character without a new name", async ({ request }) => {
@@ -289,4 +296,25 @@ test.describe.serial("Signup and Create Character", () => {
       )?._id,
     ).toBeDefined();
   });
+
+  // TODO: Test getting characters with bad token / no token
+
+  test("Getting characters returns all characters", async ({ request }) => {
+    const response = await request.post("/api/getCharacters", {
+      data: {
+        token,
+      },
+    });
+
+    // Character details should be returned
+    const jsonResponse = (await response.json()) as GetCharactersResponseOk;
+    expect(response.status()).toBe(StatusCodes.OK);
+    expect(jsonResponse.length).toBe(1);
+    const responseCharacter = jsonResponse[0];
+    expect(responseCharacter?.name).toBe(randomNewName);
+    expect(responseCharacter?.type).toBe(randomType);
+    expect(responseCharacter?.id).toBe(characterId);
+  });
+
+  // TODO: Test getting more than one character
 });

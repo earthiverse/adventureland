@@ -26,6 +26,13 @@
       "maxLength": 12,
       "pattern": "[a-zA-Z]+[a-zA-Z0-9]*"
     },
+    "getCharacters": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 5,
+        "timeWindow": 60000
+      }
+    },
     "login": {
       "enabled": true,
       "rateLimit": {

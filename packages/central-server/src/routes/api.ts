@@ -3,6 +3,7 @@ import {
   createCharacterHandler,
   CreateCharacterSchema,
 } from "./api/createCharacter.ts";
+import { getCharactersHandler, GetCharactersSchema } from "./api/getCharacters.ts";
 import { loginHandler, LoginSchema } from "./api/login.ts";
 import {
   purchaseShellsHandler,
@@ -33,6 +34,16 @@ export function setupApiRoutes(fastify: FastifyInstance) {
       },
     },
     statusHandler,
+  );
+  fastify.post(
+    "/api/getCharacters",
+    {
+      schema: GetCharactersSchema,
+      config: {
+        rateLimit: Config.get("centralServer.getCharacters.rateLimit"),
+      },
+    },
+    getCharactersHandler,
   );
   fastify.post(
     "/api/login",

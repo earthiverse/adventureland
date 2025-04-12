@@ -29,6 +29,10 @@ declare module "config" {
         /** Regex pattern character names must adhere to */
         pattern: string;
       };
+      getCharacters: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+      };
       login: {
         enabled: boolean;
         rateLimit: RateLimitOptions;
