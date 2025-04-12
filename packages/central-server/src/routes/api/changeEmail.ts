@@ -70,12 +70,12 @@ export const changeEmailHandler = async (
         error: "Your account's email is already set to the requested email",
       });
 
-    // Get character name to put in email for context
+    // Get oldest character name to put in email for context
     const characters = await Characters.find({
       accountId: jwt.accountId,
     })
       .project({ name: 1 })
-      .sort({ created: -1 })
+      .sort({ created: 1 })
       .limit(1)
       .toArray();
 
