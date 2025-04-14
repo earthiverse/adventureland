@@ -33,6 +33,10 @@ declare module "config" {
         enabled: boolean;
         rateLimit: RateLimitOptions;
       };
+      getServers: {
+        enabled: boolean;
+        rateLimit: RateLimitOptions;
+      };
       login: {
         enabled: boolean;
         rateLimit: RateLimitOptions;

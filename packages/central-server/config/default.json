@@ -33,6 +33,13 @@
         "timeWindow": 60000
       }
     },
+    "getServers": {
+      "enabled": true,
+      "rateLimit": {
+        "max": 5,
+        "timeWindow": 60000
+      }
+    },
     "login": {
       "enabled": true,
       "rateLimit": {
