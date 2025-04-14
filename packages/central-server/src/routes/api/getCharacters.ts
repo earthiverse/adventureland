@@ -1,8 +1,8 @@
 import { Characters } from "../../database.ts";
 import { verifier } from "../../jwt.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import type { AuthToken, CharacterData } from "@adventureland/types";
-import { Type } from "@sinclair/typebox";
+import type { AuthToken } from "@adventureland/types";
+import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 
@@ -32,6 +32,10 @@ export const GetCharactersSchema = {
   },
 };
 
+export type GetCharactersResponse = Static<
+  (typeof GetCharactersSchema.response)[StatusCodes.OK]
+>;
+
 export const getCharactersHandler = async (
   request: FastifyRequestTypebox<typeof GetCharactersSchema>,
   reply: FastifyReplyTypebox<typeof GetCharactersSchema>,
@@ -42,7 +46,7 @@ export const getCharactersHandler = async (
       .send({ error: "Getting characters is currently disabled" });
   }
 
-  // Get the email and password from the request body
+  // Get the token from the request body
   const { token } = request.body;
 
   // Check that the token they provided is valid
@@ -54,20 +58,13 @@ export const getCharactersHandler = async (
   }
 
   // Get all characters
-  const characters = await Characters.find({
+  const characters = (await Characters.find({
     accountId: jwt.accountId,
   })
     .project({ name: 1, id: 1, type: 1, level: 1, xp: 1, createdDate: 1 })
     .sort({ created: 1 })
-    .toArray();
+    .toArray()) as GetCharactersResponse;
 
   // Return all characters
-  return reply
-    .code(StatusCodes.OK)
-    .send(
-      characters as Pick<
-        CharacterData,
-        "name" | "id" | "type" | "level" | "xp" | "createdDate"
-      >[],
-    );
+  return reply.code(StatusCodes.OK).send(characters);
 };
