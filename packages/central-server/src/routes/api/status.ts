@@ -1,8 +1,6 @@
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { StatusCodes } from "http-status-codes";
-
-// TODO: Add token
 
 const started = Date.now();
 
@@ -16,6 +14,10 @@ export const StatusSchema = {
     }),
   },
 };
+
+export type StatusResponse = Static<
+  (typeof StatusSchema.response)[StatusCodes.OK]
+>;
 
 export const statusHandler = async (
   request: FastifyRequestTypebox<typeof StatusSchema>,

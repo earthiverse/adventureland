@@ -1,21 +1,13 @@
 import { Accounts, Characters } from "../../src/database.ts";
-import type { PurchaseSlotSchema } from "../../src/routes/api/purchaseSlot.ts";
-import type { SignupResponseCreated } from "../api.spec.ts";
+import type { PurchaseSlotResponse } from "../../src/routes/api/purchaseSlot.ts";
+import type { SignupResponse } from "../../src/routes/api/signup.ts";
+import type { ForbiddenResponse } from "../api.spec.ts";
 import type { AuthTokenPayload } from "@adventureland/types";
 import { faker } from "@faker-js/faker";
 import { test, expect } from "@playwright/test";
-import type { Static } from "@sinclair/typebox";
 import Config from "config";
 import { createSigner } from "fast-jwt";
 import { StatusCodes } from "http-status-codes";
-
-export type PurchaseSlotOk = Static<
-  (typeof PurchaseSlotSchema.response)[StatusCodes.OK]
->;
-
-export type PurchaseSlotForbidden = Static<
-  (typeof PurchaseSlotSchema.response)[StatusCodes.FORBIDDEN]
->;
 
 const initialSlots = Config.get("centralServer.signup.initial.slots");
 const slotCost = Config.get("centralServer.purchaseSlot.cost");
@@ -37,7 +29,7 @@ test.describe.serial("Purchase Slot Specification", () => {
       data: { email, password },
     });
     expect(response.status()).toBe(StatusCodes.CREATED);
-    const jsonResponse = (await response.json()) as SignupResponseCreated;
+    const jsonResponse = (await response.json()) as SignupResponse;
     accountId = jsonResponse.accountId;
     token = jsonResponse.token;
   });
@@ -51,7 +43,7 @@ test.describe.serial("Purchase Slot Specification", () => {
 
     // Response should be forbidden
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as PurchaseSlotForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
 
     // There should not be an additional slot
@@ -78,7 +70,7 @@ test.describe.serial("Purchase Slot Specification", () => {
 
     // Response should be forbidden
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as PurchaseSlotForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
 
     // There should not be an additional slot
@@ -105,7 +97,7 @@ test.describe.serial("Purchase Slot Specification", () => {
     expect(response.status()).toBe(StatusCodes.OK);
 
     // The number of slots should be accurate
-    const jsonResponse = (await response.json()) as PurchaseSlotOk;
+    const jsonResponse = (await response.json()) as PurchaseSlotResponse;
     expect(jsonResponse.numSlots).toBe(initialSlots + 1);
 
     // We should have deducted the correct number of shells, and have an additional slot
@@ -130,7 +122,7 @@ test.describe.serial("Purchase Slot Specification", () => {
 
     // Response should be forbidden
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as PurchaseSlotForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
   });
 });

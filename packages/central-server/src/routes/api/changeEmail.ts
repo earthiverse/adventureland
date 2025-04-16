@@ -8,7 +8,7 @@ import { verifier } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken, CharacterData } from "@adventureland/types";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 
@@ -32,6 +32,10 @@ export const ChangeEmailSchema = {
     }),
   },
 };
+
+export type ChangeEmailResponse = Static<
+  (typeof ChangeEmailSchema.response)[StatusCodes.OK]
+>;
 
 export const changeEmailHandler = async (
   request: FastifyRequestTypebox<typeof ChangeEmailSchema>,

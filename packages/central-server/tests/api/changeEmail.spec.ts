@@ -1,26 +1,13 @@
 import { Accounts, Characters } from "../../src/database.ts";
-import type { ChangeEmailSchema } from "../../src/routes/api/changeEmail.ts";
-import type { VerifyEmailSchema } from "../../src/routes/api/verifyEmail.ts";
-import type { SignupResponseCreated } from "../api.spec.ts";
+import type { ChangeEmailResponse } from "../../src/routes/api/changeEmail.ts";
+import type { SignupResponse } from "../../src/routes/api/signup.ts";
+import type { ForbiddenResponse } from "../api.spec.ts";
 import type { AuthTokenPayload } from "@adventureland/types";
 import { faker } from "@faker-js/faker";
 import { test, expect } from "@playwright/test";
-import type { Static } from "@sinclair/typebox";
 import config from "config";
 import { createSigner } from "fast-jwt";
 import { StatusCodes } from "http-status-codes";
-
-export type ChangeEmailOk = Static<
-  (typeof ChangeEmailSchema.response)[StatusCodes.OK]
->;
-
-export type ChangeEmailForbidden = Static<
-  (typeof ChangeEmailSchema.response)[StatusCodes.FORBIDDEN]
->;
-
-export type VerifyEmailOk = Static<
-  (typeof VerifyEmailSchema.response)[StatusCodes.OK]
->;
 
 test.describe.serial("Change Email Specification", () => {
   const email = faker.internet.email();
@@ -40,7 +27,7 @@ test.describe.serial("Change Email Specification", () => {
       data: { email, password },
     });
     expect(response.status()).toBe(StatusCodes.CREATED);
-    const jsonResponse = (await response.json()) as SignupResponseCreated;
+    const jsonResponse = (await response.json()) as SignupResponse;
     accountId = jsonResponse.accountId;
     token = jsonResponse.token;
   });
@@ -55,7 +42,7 @@ test.describe.serial("Change Email Specification", () => {
       },
     });
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as ChangeEmailForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
 
     // Ensure there is no change request for the new email yet
@@ -94,7 +81,7 @@ test.describe.serial("Change Email Specification", () => {
       },
     });
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as ChangeEmailForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
 
     // Ensure there is no change request for the new email yet
@@ -115,7 +102,7 @@ test.describe.serial("Change Email Specification", () => {
       },
     });
     expect(response.status()).toBe(StatusCodes.OK);
-    const jsonResponse = (await response.json()) as ChangeEmailOk;
+    const jsonResponse = (await response.json()) as ChangeEmailResponse;
     expect(jsonResponse.newEmail).toBe(newEmail);
 
     // Get the verifyCode from the email in Mailpit

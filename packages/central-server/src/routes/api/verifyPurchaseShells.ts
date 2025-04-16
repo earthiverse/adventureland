@@ -2,7 +2,7 @@ import { Accounts } from "../../database.ts";
 import { Logger } from "../../logger.ts";
 import { Stripe } from "../../stripe.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 import type { Stripe as BaseStripe } from "stripe";
@@ -16,12 +16,20 @@ export const VerifyPurchaseShellsSchema = {
   }),
   response: {
     [StatusCodes.OK]: Type.String(),
+    [StatusCodes.FORBIDDEN]: Type.Object({
+      error: Type.String(),
+      stripeSessionId: Type.Optional(Type.String()),
+    }),
     [StatusCodes.INTERNAL_SERVER_ERROR]: Type.Object({
       error: Type.String(),
       stripeSessionId: Type.Optional(Type.String()),
     }),
   },
 };
+
+export type verifyPurchaseShellsResponse = Static<
+  (typeof VerifyPurchaseShellsSchema.response)[StatusCodes.OK]
+>;
 
 export const verifyPurchaseShellsHandler = async (
   request: FastifyRequestTypebox<typeof VerifyPurchaseShellsSchema>,
@@ -112,7 +120,7 @@ export const verifyPurchaseShellsHandler = async (
         stripeSessionMetadata: stripeSession.metadata,
       },
     );
-    return reply.code(StatusCodes.FORBIDDEN).send({
+    return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error:
         "Something went wrong verifying shells purchase. Please email support with the Stripe session ID.",
       stripeSessionId,
@@ -154,7 +162,7 @@ export const verifyPurchaseShellsHandler = async (
       error,
     });
     // NOTE: The account has been credited with the shells at this point, don't return an error to the user.
-    //       However, if the user revisits this endpoint with the same session ID, they will be credited again!
+    //       However, if the user revisits this endpoint with the same session ID, they may be credited again!
   }
 
   Logger.notice("Shell purchase verified", {

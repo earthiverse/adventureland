@@ -3,7 +3,7 @@ import { signer } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AccountData, AuthTokenPayload } from "@adventureland/types";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import bcryptjs from "bcryptjs";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
@@ -27,6 +27,10 @@ export const LoginSchema = {
     }),
   },
 };
+
+export type LoginResponse = Static<
+  (typeof LoginSchema.response)[StatusCodes.OK]
+>;
 
 export const loginHandler = async (
   request: FastifyRequestTypebox<typeof LoginSchema>,

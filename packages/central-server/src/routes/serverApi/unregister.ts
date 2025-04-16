@@ -4,7 +4,7 @@ import { Logger } from "../../logger.ts";
 import State from "../../state.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { ServerAuthToken } from "@adventureland/types/src/AuthToken.ts";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { StatusCodes } from "http-status-codes";
 
 export const UnregisterSchema = {
@@ -21,6 +21,10 @@ export const UnregisterSchema = {
     }),
   },
 };
+
+export type UnregisterResponse = Static<
+  (typeof UnregisterSchema.response)[StatusCodes.OK]
+>;
 
 export const unregisterHandler = async (
   request: FastifyRequestTypebox<typeof UnregisterSchema>,

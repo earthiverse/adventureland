@@ -1,7 +1,7 @@
 import { Accounts } from "../../database.ts";
 import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 
@@ -25,6 +25,10 @@ export const VerifyEmailSchema = {
     }),
   },
 };
+
+export type VerifyEmailResponse = Static<
+  (typeof VerifyEmailSchema.response)[StatusCodes.OK]
+>;
 
 export const verifyEmailHandler = async (
   request: FastifyRequestTypebox<typeof VerifyEmailSchema>,

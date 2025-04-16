@@ -3,7 +3,7 @@ import { verifier } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken } from "@adventureland/types";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 
@@ -27,6 +27,10 @@ export const PurchaseSlotSchema = {
     }),
   },
 };
+
+export type PurchaseSlotResponse = Static<
+  (typeof PurchaseSlotSchema.response)[StatusCodes.OK]
+>;
 
 export const purchaseSlotHandler = async (
   request: FastifyRequestTypebox<typeof PurchaseSlotSchema>,

@@ -1,36 +1,19 @@
 import { Accounts, Characters } from "../src/database.ts";
 import { verifier } from "../src/jwt.ts";
-import type { CreateCharacterSchema } from "../src/routes/api/createCharacter.ts";
-import type { GetCharactersSchema } from "../src/routes/api/getCharacters.ts";
-import type { LoginSchema } from "../src/routes/api/login.ts";
-import type { RenameCharacterSchema } from "../src/routes/api/renameCharacter.ts";
-import type { SignupSchema } from "../src/routes/api/signup.ts";
+import type { CreateCharacterResponse } from "../src/routes/api/createCharacter.ts";
+import type { GetCharactersResponse } from "../src/routes/api/getCharacters.ts";
+import type { LoginResponse } from "../src/routes/api/login.ts";
+import type { RenameCharacterResponse } from "../src/routes/api/renameCharacter.ts";
+import type { SignupResponse } from "../src/routes/api/signup.ts";
 import type { AuthToken, CharacterType } from "@adventureland/types";
 import { faker } from "@faker-js/faker";
 import { test, expect } from "@playwright/test";
-import type { Static } from "@sinclair/typebox";
 import type { FastifyError } from "fastify";
 import { StatusCodes } from "http-status-codes";
 
-export type SignupResponseCreated = Static<
-  (typeof SignupSchema.response)[StatusCodes.CREATED]
->;
-type SignupResponseForbidden = Static<
-  (typeof SignupSchema.response)[StatusCodes.FORBIDDEN]
->;
-type LoginResponseOk = Static<(typeof LoginSchema.response)[StatusCodes.OK]>;
-type LoginResponseForbidden = Static<
-  (typeof LoginSchema.response)[StatusCodes.FORBIDDEN]
->;
-export type CreateCharacterResponseCreated = Static<
-  (typeof CreateCharacterSchema.response)[StatusCodes.CREATED]
->;
-type RenameCharacterResponseOk = Static<
-  (typeof RenameCharacterSchema.response)[StatusCodes.OK]
->;
-type GetCharactersResponseOk = Static<
-  (typeof GetCharactersSchema.response)[StatusCodes.OK]
->;
+export type ForbiddenResponse = {
+  error: string;
+};
 
 test.describe.serial("Signup and Login", () => {
   const email = faker.internet.email();
@@ -49,7 +32,7 @@ test.describe.serial("Signup and Login", () => {
 
     // Token should be valid, with the email in it
 
-    const jsonResponse = (await response.json()) as SignupResponseCreated;
+    const jsonResponse = (await response.json()) as SignupResponse;
     const token = jsonResponse.token;
     const jwt = verifier(token) as AuthToken;
     expect(jwt).toBeTruthy();
@@ -79,7 +62,7 @@ test.describe.serial("Signup and Login", () => {
 
     // Should be rejected with an error message
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as SignupResponseForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
   });
 
@@ -95,7 +78,7 @@ test.describe.serial("Signup and Login", () => {
 
     // Should be rejected with an error message
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as LoginResponseForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
   });
 
@@ -109,7 +92,7 @@ test.describe.serial("Signup and Login", () => {
 
     // Should be rejected with an error message
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as LoginResponseForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
   });
 
@@ -123,7 +106,7 @@ test.describe.serial("Signup and Login", () => {
     expect(response.status()).toBe(StatusCodes.OK);
 
     // Token should be valid
-    const jsonResponse = (await response.json()) as LoginResponseOk;
+    const jsonResponse = (await response.json()) as LoginResponse;
     const token = jsonResponse.token;
     const jwt = verifier(token) as AuthToken;
     expect(jwt).toBeTruthy();
@@ -164,7 +147,7 @@ test.describe.serial("Signup and Create Character", () => {
     });
 
     expect(response.status()).toBe(StatusCodes.CREATED);
-    const jsonResponse = (await response.json()) as SignupResponseCreated;
+    const jsonResponse = (await response.json()) as SignupResponse;
     token = jsonResponse.token;
 
     // Get account ID
@@ -229,7 +212,7 @@ test.describe.serial("Signup and Create Character", () => {
     // Character details should be returned
     expect(response.status()).toBe(StatusCodes.CREATED);
     const jsonResponse =
-      (await response.json()) as CreateCharacterResponseCreated;
+      (await response.json()) as CreateCharacterResponse;
     expect(jsonResponse.character).toBeTruthy();
     expect(jsonResponse.character.accountId).toBe(accountId);
     expect(jsonResponse.character.name).toBe(randomName);
@@ -280,7 +263,7 @@ test.describe.serial("Signup and Create Character", () => {
     });
 
     // Rename details should be returned
-    const jsonResponse = (await response.json()) as RenameCharacterResponseOk;
+    const jsonResponse = (await response.json()) as RenameCharacterResponse;
     expect(response.status()).toBe(StatusCodes.OK);
     expect(jsonResponse.oldName).toBe(randomName);
     expect(jsonResponse.newName).toBe(randomNewName);
@@ -307,7 +290,7 @@ test.describe.serial("Signup and Create Character", () => {
     });
 
     // Character details should be returned
-    const jsonResponse = (await response.json()) as GetCharactersResponseOk;
+    const jsonResponse = (await response.json()) as GetCharactersResponse;
     expect(response.status()).toBe(StatusCodes.OK);
     expect(jsonResponse.length).toBe(1);
     const responseCharacter = jsonResponse[0];

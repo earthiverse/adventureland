@@ -7,7 +7,7 @@ import { Logger } from "../../logger.ts";
 import State from "../../state.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { ServerAuthToken } from "@adventureland/types/src/AuthToken.ts";
-import { Type } from "@sinclair/typebox";
+import { Type, type Static } from "@sinclair/typebox";
 import { StatusCodes } from "http-status-codes";
 
 export const RegisterSchema = {
@@ -24,6 +24,10 @@ export const RegisterSchema = {
     }),
   },
 };
+
+export type RegisterResponse = Static<
+  (typeof RegisterSchema.response)[StatusCodes.OK]
+>;
 
 export const registerHandler = async (
   request: FastifyRequestTypebox<typeof RegisterSchema>,

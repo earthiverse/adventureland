@@ -1,16 +1,11 @@
 import { Accounts, Characters } from "../../src/database.ts";
-import type { PurchaseShellsSchema } from "../../src/routes/api/purchaseShells.ts";
-import type { SignupResponseCreated } from "../api.spec.ts";
+import type { SignupResponse } from "../../src/routes/api/signup.ts";
+import type { ForbiddenResponse } from "../api.spec.ts";
 import type { AuthTokenPayload } from "@adventureland/types";
 import { faker } from "@faker-js/faker";
 import { test, expect } from "@playwright/test";
-import type { Static } from "@sinclair/typebox";
 import { createSigner } from "fast-jwt";
 import { StatusCodes } from "http-status-codes";
-
-export type PurchaseShellsForbidden = Static<
-  (typeof PurchaseShellsSchema.response)[StatusCodes.FORBIDDEN]
->;
 
 test.describe.serial("Purchase Shells Specification", () => {
   const email = faker.internet.email();
@@ -28,7 +23,7 @@ test.describe.serial("Purchase Shells Specification", () => {
       data: { email, password },
     });
     expect(response.status()).toBe(StatusCodes.CREATED);
-    const jsonResponse = (await response.json()) as SignupResponseCreated;
+    const jsonResponse = (await response.json()) as SignupResponse;
     accountId = jsonResponse.accountId;
     token = jsonResponse.token;
   });
@@ -49,7 +44,7 @@ test.describe.serial("Purchase Shells Specification", () => {
 
     // Response should be forbidden
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
-    const jsonResponse = (await response.json()) as PurchaseShellsForbidden;
+    const jsonResponse = (await response.json()) as ForbiddenResponse;
     expect(jsonResponse.error).toBeTruthy();
 
     // There should not be any shells
