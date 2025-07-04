@@ -1,16 +1,12 @@
-import { Accounts, Characters } from "../../database.ts";
-import {
-  Emailer,
-  generateVerificationCode,
-  getVerifyUrl,
-} from "../../email.ts";
-import { verifier } from "../../jwt.ts";
-import { Logger } from "../../logger.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken, CharacterData } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
+import { Accounts, Characters } from "../../database.ts";
+import { Emailer, generateVerificationCode, getVerifyUrl } from "../../email.ts";
+import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.changeEmail.enabled");
 const helpEmail = config.get("email.addressBook.help");
@@ -33,18 +29,14 @@ export const ChangeEmailSchema = {
   },
 };
 
-export type ChangeEmailResponse = Static<
-  (typeof ChangeEmailSchema.response)[StatusCodes.OK]
->;
+export type ChangeEmailResponse = Static<(typeof ChangeEmailSchema.response)[StatusCodes.OK]>;
 
 export const changeEmailHandler = async (
   request: FastifyRequestTypebox<typeof ChangeEmailSchema>,
   reply: FastifyReplyTypebox<typeof ChangeEmailSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Changing emails is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Changing emails is currently disabled" });
   }
 
   const { token, newEmail } = request.body;
@@ -59,10 +51,7 @@ export const changeEmailHandler = async (
 
   try {
     // Check the current email against the new email
-    const currentEmail = await Accounts.findOne(
-      { id: jwt.accountId },
-      { projection: { email: 1 } },
-    );
+    const currentEmail = await Accounts.findOne({ id: jwt.accountId }, { projection: { email: 1 } });
     if (!currentEmail)
       throw new Error(
         `ID ${jwt.accountId} was successfully authenticated via token, but the account could not be retrieved!`,
@@ -106,10 +95,7 @@ export const changeEmailHandler = async (
         },
       },
     );
-    if (result.modifiedCount === 0)
-      throw new Error(
-        `We couldn't modify ${jwt.accountId} to add an email change!`,
-      );
+    if (result.modifiedCount === 0) throw new Error(`We couldn't modify ${jwt.accountId} to add an email change!`);
 
     // Send notification email to old email
     await Emailer.sendMail({
@@ -151,9 +137,7 @@ export const changeEmailHandler = async (
   } catch (error) {
     const message = "An unexpected error occurred during email change";
     Logger.error(message, error);
-    return reply
-      .code(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ error: message });
+    return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: message });
   }
 
   Logger.info("Email Change Request", {

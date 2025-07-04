@@ -1,3 +1,8 @@
+import type { AuthToken, CharacterType } from "@adventureland/types";
+import { faker } from "@faker-js/faker";
+import { expect, test } from "@playwright/test";
+import type { FastifyError } from "fastify";
+import { StatusCodes } from "http-status-codes";
 import { Accounts, Characters } from "../src/database.ts";
 import { verifier } from "../src/jwt.ts";
 import type { CreateCharacterResponse } from "../src/routes/api/createCharacter.ts";
@@ -5,11 +10,6 @@ import type { GetCharactersResponse } from "../src/routes/api/getCharacters.ts";
 import type { LoginResponse } from "../src/routes/api/login.ts";
 import type { RenameCharacterResponse } from "../src/routes/api/renameCharacter.ts";
 import type { SignupResponse } from "../src/routes/api/signup.ts";
-import type { AuthToken, CharacterType } from "@adventureland/types";
-import { faker } from "@faker-js/faker";
-import { test, expect } from "@playwright/test";
-import type { FastifyError } from "fastify";
-import { StatusCodes } from "http-status-codes";
 
 export type ForbiddenResponse = {
   error: string;
@@ -53,9 +53,7 @@ test.describe.serial("Signup and Login", () => {
     expect(jsonResponse.message).toBeTruthy();
   });
 
-  test("Signing up two accounts with the same email is forbidden", async ({
-    request,
-  }) => {
+  test("Signing up two accounts with the same email is forbidden", async ({ request }) => {
     const response = await request.post("/api/signup", {
       data: { email, password: faker.internet.password() },
     });
@@ -66,9 +64,7 @@ test.describe.serial("Signup and Login", () => {
     expect(jsonResponse.error).toBeTruthy();
   });
 
-  test("Logging in with the wrong password is forbidden", async ({
-    request,
-  }) => {
+  test("Logging in with the wrong password is forbidden", async ({ request }) => {
     const response = await request.post("/api/login", {
       data: {
         email,
@@ -96,9 +92,7 @@ test.describe.serial("Signup and Login", () => {
     expect(jsonResponse.error).toBeTruthy();
   });
 
-  test("Logging in with the correct password returns a valid token", async ({
-    request,
-  }) => {
+  test("Logging in with the correct password returns a valid token", async ({ request }) => {
     const response = await request.post("/api/login", {
       data: { email, password },
     });
@@ -120,15 +114,7 @@ test.describe.serial("Signup and Login", () => {
   });
 });
 
-const characterTypes: CharacterType[] = [
-  "mage",
-  "merchant",
-  "paladin",
-  "priest",
-  "ranger",
-  "rogue",
-  "warrior",
-];
+const characterTypes: CharacterType[] = ["mage", "merchant", "paladin", "priest", "ranger", "rogue", "warrior"];
 
 test.describe.serial("Signup and Create Character", () => {
   const email = faker.internet.email();
@@ -162,9 +148,7 @@ test.describe.serial("Signup and Create Character", () => {
         token,
         character: {
           // Missing name
-          type: characterTypes[
-            Math.floor(Math.random() * characterTypes.length)
-          ],
+          type: characterTypes[Math.floor(Math.random() * characterTypes.length)],
         },
       },
     });
@@ -179,9 +163,7 @@ test.describe.serial("Signup and Create Character", () => {
         token,
         character: {
           name: "", // Empty name
-          type: characterTypes[
-            Math.floor(Math.random() * characterTypes.length)
-          ],
+          type: characterTypes[Math.floor(Math.random() * characterTypes.length)],
         },
       },
     });
@@ -193,12 +175,9 @@ test.describe.serial("Signup and Create Character", () => {
   });
 
   const randomName = faker.helpers.fromRegExp("[a-zA-Z]{5,12}");
-  const randomType =
-    characterTypes[Math.floor(Math.random() * characterTypes.length)];
+  const randomType = characterTypes[Math.floor(Math.random() * characterTypes.length)];
   let characterId: string;
-  test("Creating a new character returns new character details", async ({
-    request,
-  }) => {
+  test("Creating a new character returns new character details", async ({ request }) => {
     const response = await request.post("/api/createCharacter", {
       data: {
         token,
@@ -211,8 +190,7 @@ test.describe.serial("Signup and Create Character", () => {
 
     // Character details should be returned
     expect(response.status()).toBe(StatusCodes.CREATED);
-    const jsonResponse =
-      (await response.json()) as CreateCharacterResponse;
+    const jsonResponse = (await response.json()) as CreateCharacterResponse;
     expect(jsonResponse.character).toBeTruthy();
     expect(jsonResponse.character.accountId).toBe(accountId);
     expect(jsonResponse.character.name).toBe(randomName);
@@ -271,12 +249,7 @@ test.describe.serial("Signup and Create Character", () => {
 
     // Check that we deducted the correct amount of shells
     expect(
-      (
-        await Accounts.findOne(
-          { id: accountId, shells: 999999 - jsonResponse.cost },
-          { projection: { _id: 1 } },
-        )
-      )?._id,
+      (await Accounts.findOne({ id: accountId, shells: 999999 - jsonResponse.cost }, { projection: { _id: 1 } }))?._id,
     ).toBeDefined();
   });
 

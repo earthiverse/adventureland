@@ -1,10 +1,10 @@
-import { Characters } from "../../database.ts";
-import { verifier } from "../../jwt.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
+import { Characters } from "../../database.ts";
+import { verifier } from "../../jwt.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.getCharacters.enabled");
 
@@ -32,18 +32,14 @@ export const GetCharactersSchema = {
   },
 };
 
-export type GetCharactersResponse = Static<
-  (typeof GetCharactersSchema.response)[StatusCodes.OK]
->;
+export type GetCharactersResponse = Static<(typeof GetCharactersSchema.response)[StatusCodes.OK]>;
 
 export const getCharactersHandler = async (
   request: FastifyRequestTypebox<typeof GetCharactersSchema>,
   reply: FastifyReplyTypebox<typeof GetCharactersSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Getting characters is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Getting characters is currently disabled" });
   }
 
   // Get the token from the request body

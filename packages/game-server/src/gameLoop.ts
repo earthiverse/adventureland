@@ -1,5 +1,5 @@
-import { Logger } from "./logger.ts";
 import Config from "config";
+import { Logger } from "./logger.ts";
 
 const serverId = Config.get("gameServer.id");
 

@@ -1,11 +1,11 @@
-import { Accounts } from "../../database.ts";
-import { Logger } from "../../logger.ts";
-import { Stripe } from "../../stripe.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 import type { Stripe as BaseStripe } from "stripe";
+import { Accounts } from "../../database.ts";
+import { Logger } from "../../logger.ts";
+import { Stripe } from "../../stripe.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 // NOTE: This endpoint has to be synced with purchaseShells
 const enabled = config.get("centralServer.purchaseShells.enabled");
@@ -27,9 +27,7 @@ export const VerifyPurchaseShellsSchema = {
   },
 };
 
-export type verifyPurchaseShellsResponse = Static<
-  (typeof VerifyPurchaseShellsSchema.response)[StatusCodes.OK]
->;
+export type verifyPurchaseShellsResponse = Static<(typeof VerifyPurchaseShellsSchema.response)[StatusCodes.OK]>;
 
 export const verifyPurchaseShellsHandler = async (
   request: FastifyRequestTypebox<typeof VerifyPurchaseShellsSchema>,
@@ -69,8 +67,7 @@ export const verifyPurchaseShellsHandler = async (
       stripeSessionId,
     });
     return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      error:
-        "Something went wrong verifying shells purchase. Please email support with the Stripe session ID",
+      error: "Something went wrong verifying shells purchase. Please email support with the Stripe session ID",
       stripeSessionId,
     });
   }
@@ -92,15 +89,12 @@ export const verifyPurchaseShellsHandler = async (
   // Ensure that the sesssion hasn't already been processed
   const processed = stripeSession.metadata?.processed;
   if (processed !== undefined) {
-    Logger.warning(
-      "Stripe session was attempted to be processed multiple times",
-      {
-        ip: request.ip,
-        accountId,
-        stripeSessionId,
-        stripeSessionMetadata: stripeSession.metadata,
-      },
-    );
+    Logger.warning("Stripe session was attempted to be processed multiple times", {
+      ip: request.ip,
+      accountId,
+      stripeSessionId,
+      stripeSessionMetadata: stripeSession.metadata,
+    });
     return reply.code(StatusCodes.FORBIDDEN).send({
       error:
         "The shells for this purchase have already been credited. Please email support with the Stripe sesssion ID if this is incorrect.",
@@ -111,28 +105,21 @@ export const verifyPurchaseShellsHandler = async (
   // Get the number of shells purchased
   const numShells = stripeSession.metadata?.numShells;
   if (numShells === undefined || numShells === null || numShells === "") {
-    Logger.error(
-      "The number of shells purchased was not found in the Stripe session metadata",
-      {
-        ip: request.ip,
-        accountId,
-        stripeSessionId,
-        stripeSessionMetadata: stripeSession.metadata,
-      },
-    );
+    Logger.error("The number of shells purchased was not found in the Stripe session metadata", {
+      ip: request.ip,
+      accountId,
+      stripeSessionId,
+      stripeSessionMetadata: stripeSession.metadata,
+    });
     return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
-      error:
-        "Something went wrong verifying shells purchase. Please email support with the Stripe session ID.",
+      error: "Something went wrong verifying shells purchase. Please email support with the Stripe session ID.",
       stripeSessionId,
     });
   }
 
   // Add shells to account
   try {
-    await Accounts.updateOne(
-      { id: accountId },
-      { $inc: { shells: Number.parseInt(numShells) } },
-    );
+    await Accounts.updateOne({ id: accountId }, { $inc: { shells: Number.parseInt(numShells) } });
   } catch (error) {
     Logger.error("Could not credit account with shells purchase", {
       ip: request.ip,
@@ -141,8 +128,7 @@ export const verifyPurchaseShellsHandler = async (
       error,
     });
     return reply.code(StatusCodes.FORBIDDEN).send({
-      error:
-        "Something went wrong verifying shells purchase. Please email support with the Stripe session ID.",
+      error: "Something went wrong verifying shells purchase. Please email support with the Stripe session ID.",
       stripeSessionId,
     });
   }
@@ -171,7 +157,5 @@ export const verifyPurchaseShellsHandler = async (
     stripeSessionId,
     numShells,
   });
-  return reply
-    .code(StatusCodes.OK)
-    .send("Your purchase of " + numShells + " shells has been applied!"); // TODO: Redirect? HTML Page?
+  return reply.code(StatusCodes.OK).send("Your purchase of " + numShells + " shells has been applied!"); // TODO: Redirect? HTML Page?
 };

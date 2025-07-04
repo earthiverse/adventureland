@@ -1,14 +1,11 @@
-import {
-  checkGameServerHealth,
-  setCharactersOffline,
-} from "../../checkLoop.ts";
+import type { ServerAuthToken } from "@adventureland/types/src/AuthToken.ts";
+import { Type, type Static } from "@sinclair/typebox";
+import { StatusCodes } from "http-status-codes";
+import { checkGameServerHealth, setCharactersOffline } from "../../checkLoop.ts";
 import { verifier } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import State from "../../state.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import type { ServerAuthToken } from "@adventureland/types/src/AuthToken.ts";
-import { Type, type Static } from "@sinclair/typebox";
-import { StatusCodes } from "http-status-codes";
 
 export const RegisterSchema = {
   body: Type.Object({
@@ -25,9 +22,7 @@ export const RegisterSchema = {
   },
 };
 
-export type RegisterResponse = Static<
-  (typeof RegisterSchema.response)[StatusCodes.OK]
->;
+export type RegisterResponse = Static<(typeof RegisterSchema.response)[StatusCodes.OK]>;
 
 export const registerHandler = async (
   request: FastifyRequestTypebox<typeof RegisterSchema>,
@@ -53,9 +48,7 @@ export const registerHandler = async (
   let serverState = State.registeredServers[serverId];
   if (serverState === undefined) {
     // Ensure that there was never a server registered at this IP before
-    for (const [previousServerId, previousServerState] of Object.entries(
-      State.registeredServers,
-    )) {
+    for (const [previousServerId, previousServerState] of Object.entries(State.registeredServers)) {
       if (previousServerState.ip === request.ip) {
         Logger.warning("Game server changed server ID", {
           serverId,
@@ -91,14 +84,11 @@ export const registerHandler = async (
 
   // Check if the game server at the registered IP is active
   if (await checkGameServerHealth(serverId, serverState)) {
-    Logger.error(
-      "A game server is trying to register with an ID that is already registered",
-      {
-        serverId,
-        registeringIp: request.ip,
-        registeredIp: serverState.ip,
-      },
-    );
+    Logger.error("A game server is trying to register with an ID that is already registered", {
+      serverId,
+      registeringIp: request.ip,
+      registeredIp: serverState.ip,
+    });
     return reply.code(StatusCodes.FORBIDDEN).send({
       error: "There is another game server registered with this server ID",
     });

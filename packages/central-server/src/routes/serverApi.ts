@@ -1,7 +1,7 @@
-import { registerHandler, RegisterSchema } from "./serverApi/register.ts";
-import { unregisterHandler, UnregisterSchema } from "./serverApi/unregister.ts";
 import Config from "config";
 import type { FastifyInstance } from "fastify";
+import { registerHandler, RegisterSchema } from "./serverApi/register.ts";
+import { unregisterHandler, UnregisterSchema } from "./serverApi/unregister.ts";
 
 export function setupServerApiRoutes(fastify: FastifyInstance) {
   fastify.post(

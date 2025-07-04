@@ -1,28 +1,16 @@
+import Config from "config";
+import type { FastifyInstance } from "fastify";
 import { changeEmailHandler, ChangeEmailSchema } from "./api/changeEmail.ts";
-import {
-  createCharacterHandler,
-  CreateCharacterSchema,
-} from "./api/createCharacter.ts";
+import { createCharacterHandler, CreateCharacterSchema } from "./api/createCharacter.ts";
 import { getCharactersHandler, GetCharactersSchema } from "./api/getCharacters.ts";
 import { loginHandler, LoginSchema } from "./api/login.ts";
-import {
-  purchaseShellsHandler,
-  PurchaseShellsSchema,
-} from "./api/purchaseShells.ts";
+import { purchaseShellsHandler, PurchaseShellsSchema } from "./api/purchaseShells.ts";
 import { purchaseSlotHandler, PurchaseSlotSchema } from "./api/purchaseSlot.ts";
-import {
-  renameCharacterHandler,
-  RenameCharacterSchema,
-} from "./api/renameCharacter.ts";
+import { renameCharacterHandler, RenameCharacterSchema } from "./api/renameCharacter.ts";
 import { signupHandler, SignupSchema } from "./api/signup.ts";
 import { statusHandler, StatusSchema } from "./api/status.ts";
 import { verifyEmailHandler, VerifyEmailSchema } from "./api/verifyEmail.ts";
-import {
-  verifyPurchaseShellsHandler,
-  VerifyPurchaseShellsSchema,
-} from "./api/verifyPurchaseShells.ts";
-import Config from "config";
-import type { FastifyInstance } from "fastify";
+import { verifyPurchaseShellsHandler, VerifyPurchaseShellsSchema } from "./api/verifyPurchaseShells.ts";
 
 export function setupApiRoutes(fastify: FastifyInstance) {
   fastify.get(

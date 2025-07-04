@@ -1,11 +1,11 @@
+import type { ServerAuthToken } from "@adventureland/types/src/AuthToken.ts";
+import { Type, type Static } from "@sinclair/typebox";
+import { StatusCodes } from "http-status-codes";
 import { setCharactersOffline } from "../../checkLoop.ts";
 import { verifier } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import State from "../../state.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import type { ServerAuthToken } from "@adventureland/types/src/AuthToken.ts";
-import { Type, type Static } from "@sinclair/typebox";
-import { StatusCodes } from "http-status-codes";
 
 export const UnregisterSchema = {
   body: Type.Object({
@@ -22,9 +22,7 @@ export const UnregisterSchema = {
   },
 };
 
-export type UnregisterResponse = Static<
-  (typeof UnregisterSchema.response)[StatusCodes.OK]
->;
+export type UnregisterResponse = Static<(typeof UnregisterSchema.response)[StatusCodes.OK]>;
 
 export const unregisterHandler = async (
   request: FastifyRequestTypebox<typeof UnregisterSchema>,
@@ -49,27 +47,19 @@ export const unregisterHandler = async (
   // Get the current state
   const serverState = State.registeredServers[serverId];
   if (serverState === undefined) {
-    Logger.warning(
-      "Request to unregister a game server that was never registered",
-      { serverId, ip: request.ip },
-    );
+    Logger.warning("Request to unregister a game server that was never registered", { serverId, ip: request.ip });
     await setCharactersOffline(serverId);
     return reply.code(StatusCodes.OK).send({});
   }
 
   // Check IP against what's registered
   if (serverState.ip !== request.ip) {
-    Logger.error(
-      "Received request to unregister a game server whose IP does not match",
-      {
-        serverId,
-        unregisteringIp: request.ip,
-        registeredIp: serverState.ip,
-      },
-    );
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Game server IP mismatch" });
+    Logger.error("Received request to unregister a game server whose IP does not match", {
+      serverId,
+      unregisteringIp: request.ip,
+      registeredIp: serverState.ip,
+    });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Game server IP mismatch" });
   }
 
   delete State.registeredServers[serverId];

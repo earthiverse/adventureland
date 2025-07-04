@@ -1,7 +1,7 @@
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type } from "@sinclair/typebox";
 import Config from "config";
 import { StatusCodes } from "http-status-codes";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const serverId = Config.get("gameServer.id");
 
@@ -28,7 +28,5 @@ export const statusHandler = async (
   const ip = request.ip;
   const uptime = (Date.now() - started) / 1000;
 
-  return reply
-    .code(StatusCodes.OK)
-    .send({ serverId, status, ip, started, uptime });
+  return reply.code(StatusCodes.OK).send({ serverId, status, ip, started, uptime });
 };

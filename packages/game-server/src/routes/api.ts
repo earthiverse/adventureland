@@ -1,6 +1,6 @@
-import { statusHandler, StatusSchema } from "./api/status.ts";
 import Config from "config";
 import type { FastifyInstance } from "fastify";
+import { statusHandler, StatusSchema } from "./api/status.ts";
 
 export function setupApiRoutes(fastify: FastifyInstance) {
   fastify.get(

@@ -1,12 +1,12 @@
-import { Accounts, Client, Characters } from "../../database.ts";
-import { verifier } from "../../jwt.ts";
-import { Logger } from "../../logger.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 import { MongoServerError } from "mongodb";
+import { Accounts, Characters, Client } from "../../database.ts";
+import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.renameCharacter.enabled");
 const minLength = config.get("centralServer.renameCharacter.minLength");
@@ -39,25 +39,20 @@ export const RenameCharacterSchema = {
   },
 };
 
-export type RenameCharacterResponse = Static<
-  (typeof RenameCharacterSchema.response)[StatusCodes.OK]
->;
+export type RenameCharacterResponse = Static<(typeof RenameCharacterSchema.response)[StatusCodes.OK]>;
 
 export const renameCharacterHandler = async (
   request: FastifyRequestTypebox<typeof RenameCharacterSchema>,
   reply: FastifyReplyTypebox<typeof RenameCharacterSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Character renaming is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Character renaming is currently disabled" });
   }
 
   const { token, oldName, newName } = request.body;
 
   // Return early if the names are the same
-  if (oldName === newName)
-    return reply.code(StatusCodes.OK).send({ oldName, newName, cost: 0 });
+  if (oldName === newName) return reply.code(StatusCodes.OK).send({ oldName, newName, cost: 0 });
 
   // Check that the token they provided is valid
   let jwt: AuthToken;
@@ -69,9 +64,7 @@ export const renameCharacterHandler = async (
 
   const cost = costs[newName.length];
   if (cost === undefined) {
-    Logger.error(
-      `The cost for renaming a character of length ${newName.length} is undefined.`,
-    );
+    Logger.error(`The cost for renaming a character of length ${newName.length} is undefined.`);
     return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: "An unexpected error occurred during character renaming",
     });
@@ -91,9 +84,7 @@ export const renameCharacterHandler = async (
       { session },
     );
     if (result.modifiedCount === 0) {
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: "Insufficient shells to rename character" });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: "Insufficient shells to rename character" });
     }
 
     // Update the character name
@@ -106,18 +97,14 @@ export const renameCharacterHandler = async (
       { session },
     );
     if (result.modifiedCount === 0) {
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: `You do not have a character named ${oldName}` });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: `You do not have a character named ${oldName}` });
     }
 
     await session.commitTransaction();
   } catch (error) {
     if (error instanceof MongoServerError) {
       if (error.code === 11000) {
-        return reply
-          .code(StatusCodes.FORBIDDEN)
-          .send({ error: `Another character is already named ${newName}` });
+        return reply.code(StatusCodes.FORBIDDEN).send({ error: `Another character is already named ${newName}` });
       }
     }
     const message = "An unexpected error occurred during character renaming";

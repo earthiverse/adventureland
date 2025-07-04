@@ -1,9 +1,9 @@
+import type { AuthToken } from "@adventureland/types";
+import config from "config";
 import { Characters } from "../../database.ts";
 import { verifier } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import type { GameServer } from "../index.ts";
-import type { AuthToken } from "@adventureland/types";
-import config from "config";
 
 const maxActiveCharacters = config.get("gameServer.maxActiveCharacters");
 const serverId = config.get("gameServer.id");
@@ -23,8 +23,7 @@ export function setupConnection(gameServer: typeof GameServer) {
     }
 
     const characterId = socket.handshake.auth.characterId as string | undefined;
-    if (characterId === undefined)
-      return next(new Error("No character ID provided"));
+    if (characterId === undefined) return next(new Error("No character ID provided"));
 
     try {
       const numActiveCharacters = await Characters.countDocuments({
@@ -45,18 +44,14 @@ export function setupConnection(gameServer: typeof GameServer) {
         return next(new Error("Character not found"));
       }
       if (character.accountId !== jwt.accountId) {
-        Logger.info(
-          "Attempt to start a character which does not belong to the user",
-          {
-            ip: socket.handshake.address,
-            accountId: jwt.accountId,
-            characterId,
-          },
-        );
+        Logger.info("Attempt to start a character which does not belong to the user", {
+          ip: socket.handshake.address,
+          accountId: jwt.accountId,
+          characterId,
+        });
         return next(new Error("Character does not belong to you"));
       }
-      if (character.online !== undefined)
-        return next(new Error("Character is online"));
+      if (character.online !== undefined) return next(new Error("Character is online"));
 
       // Add data to the socket
       socket.data.character = character;
@@ -72,10 +67,7 @@ export function setupConnection(gameServer: typeof GameServer) {
   // Set the character to online when they connect, and offline when they disconnect
   gameServer.on("connection", async (socket) => {
     // Set the character online
-    await Characters.updateOne(
-      { id: socket.data.character.id },
-      { $set: { online: serverId } },
-    );
+    await Characters.updateOne({ id: socket.data.character.id }, { $set: { online: serverId } });
     Logger.info("Character started", {
       ip: socket.handshake.address,
       accountId: socket.data.character.accountId,
@@ -84,10 +76,7 @@ export function setupConnection(gameServer: typeof GameServer) {
 
     socket.on("disconnect", async () => {
       // Set character offline
-      await Characters.updateOne(
-        { id: socket.data.character.id },
-        { $unset: { online: true } },
-      );
+      await Characters.updateOne({ id: socket.data.character.id }, { $unset: { online: true } });
       Logger.info("Character stopped", {
         ip: socket.handshake.address,
         accountId: socket.data.character.accountId,

@@ -1,11 +1,6 @@
 {
   "extends": "@total-typescript/tsconfig/tsc/no-dom/library",
-  "include": [
-    "src/**/*.ts",
-    "config/**/*.ts",
-    "tests/**/*.ts",
-    "playwright.config.ts"
-  ],
+  "include": ["src/**/*.ts", "config/**/*.ts", "tests/**/*.ts", "playwright.config.ts"],
   "compilerOptions": {
     "target": "esnext",
     "module": "nodenext",

@@ -1,12 +1,12 @@
-import { Accounts } from "../../database.ts";
-import { signer } from "../../jwt.ts";
-import { Logger } from "../../logger.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AccountData, AuthTokenPayload } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import bcryptjs from "bcryptjs";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
+import { Accounts } from "../../database.ts";
+import { signer } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.login.enabled");
 
@@ -28,18 +28,14 @@ export const LoginSchema = {
   },
 };
 
-export type LoginResponse = Static<
-  (typeof LoginSchema.response)[StatusCodes.OK]
->;
+export type LoginResponse = Static<(typeof LoginSchema.response)[StatusCodes.OK]>;
 
 export const loginHandler = async (
   request: FastifyRequestTypebox<typeof LoginSchema>,
   reply: FastifyReplyTypebox<typeof LoginSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Logins are currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Logins are currently disabled" });
   }
 
   // Get the email and password from the request body
@@ -52,22 +48,16 @@ export const loginHandler = async (
 
     if (account === null) {
       // Account not found
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: "Invalid email or password" });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: "Invalid email or password" });
     }
 
     if (!bcryptjs.compareSync(password, account.password)) {
       // Password is incorrect
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: "Invalid email or password" });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: "Invalid email or password" });
     }
   } catch (error) {
     Logger.error(error);
-    return reply
-      .code(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ error: "An unexpected error occurred during login" });
+    return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: "An unexpected error occurred during login" });
   }
 
   // Log the login

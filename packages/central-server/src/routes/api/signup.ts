@@ -1,18 +1,14 @@
-import { Accounts } from "../../database.ts";
-import {
-  Emailer,
-  generateVerificationCode,
-  getVerifyUrl,
-} from "../../email.ts";
-import { signer } from "../../jwt.ts";
-import { Logger } from "../../logger.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AccountData, AuthTokenPayload } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import bcryptjs from "bcryptjs";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 import { MongoServerError } from "mongodb";
+import { Accounts } from "../../database.ts";
+import { Emailer, generateVerificationCode, getVerifyUrl } from "../../email.ts";
+import { signer } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.signup.enabled");
 const helpEmail = config.get("email.addressBook.help");
@@ -37,18 +33,14 @@ export const SignupSchema = {
   },
 };
 
-export type SignupResponse = Static<
-  (typeof SignupSchema.response)[StatusCodes.CREATED]
->;
+export type SignupResponse = Static<(typeof SignupSchema.response)[StatusCodes.CREATED]>;
 
 export const signupHandler = async (
   request: FastifyRequestTypebox<typeof SignupSchema>,
   reply: FastifyReplyTypebox<typeof SignupSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Signups are currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Signups are currently disabled" });
   }
 
   // Get the email and password from the request body
@@ -74,16 +66,12 @@ export const signupHandler = async (
   } catch (error) {
     if (error instanceof MongoServerError) {
       if (error.code === 11000) {
-        return reply
-          .code(StatusCodes.FORBIDDEN)
-          .send({ error: "An account with that email already exists" });
+        return reply.code(StatusCodes.FORBIDDEN).send({ error: "An account with that email already exists" });
       }
     }
     const message = "An unexpected error occurred during signup";
     Logger.error(message, error);
-    return reply
-      .code(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ error: message });
+    return reply.code(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: message });
   }
 
   // Send a welcome email

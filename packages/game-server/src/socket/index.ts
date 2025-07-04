@@ -1,18 +1,8 @@
-import { setupConnection } from "./events/connection.ts";
-import type {
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  SocketData,
-} from "@adventureland/types";
+import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "@adventureland/types";
 import { Server } from "socket.io";
+import { setupConnection } from "./events/connection.ts";
 
-const GameServer = new Server<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  SocketData
->({
+const GameServer = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>({
   cors: {
     origin: "*",
   },

@@ -1,14 +1,11 @@
+import Config from "config";
+import Fastify from "fastify";
 import { gameLoop } from "./gameLoop.ts";
 import { Logger } from "./logger.ts";
-import {
-  registerWithCentralServer,
-  unregisterWithCentralServer,
-} from "./registration.ts";
+import { registerWithCentralServer, unregisterWithCentralServer } from "./registration.ts";
 import { setupApiRoutes } from "./routes/api.ts";
 import { GameServer } from "./socket/index.ts";
 import { initializeState } from "./state.ts";
-import Config from "config";
-import Fastify from "fastify";
 
 const port = Config.get("gameServer.port");
 

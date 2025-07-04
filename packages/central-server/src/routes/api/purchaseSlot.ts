@@ -1,11 +1,11 @@
-import { Accounts } from "../../database.ts";
-import { verifier } from "../../jwt.ts";
-import { Logger } from "../../logger.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
+import { Accounts } from "../../database.ts";
+import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.purchaseSlot.enabled");
 const cost = config.get("centralServer.purchaseSlot.cost");
@@ -28,18 +28,14 @@ export const PurchaseSlotSchema = {
   },
 };
 
-export type PurchaseSlotResponse = Static<
-  (typeof PurchaseSlotSchema.response)[StatusCodes.OK]
->;
+export type PurchaseSlotResponse = Static<(typeof PurchaseSlotSchema.response)[StatusCodes.OK]>;
 
 export const purchaseSlotHandler = async (
   request: FastifyRequestTypebox<typeof PurchaseSlotSchema>,
   reply: FastifyReplyTypebox<typeof PurchaseSlotSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Purchasing slots is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Purchasing slots is currently disabled" });
   }
 
   const { token } = request.body;
@@ -54,10 +50,7 @@ export const purchaseSlotHandler = async (
 
   // Check that they have enough shells and haven't hit the limit for how many slots they can have
   try {
-    const account = await Accounts.findOne(
-      { id: jwt.accountId },
-      { projection: { slots: 1, shells: 1 } },
-    );
+    const account = await Accounts.findOne({ id: jwt.accountId }, { projection: { slots: 1, shells: 1 } });
 
     if (!account) {
       throw new Error(
@@ -65,14 +58,10 @@ export const purchaseSlotHandler = async (
       );
     }
     if (account.shells < cost) {
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: "Insufficient shells to purchase slot" });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: "Insufficient shells to purchase slot" });
     }
     if (account.slots >= maxSlots) {
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: "You have reached the maximum number of slots" });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: "You have reached the maximum number of slots" });
     }
 
     // Purchase the slot
@@ -86,8 +75,7 @@ export const purchaseSlotHandler = async (
     );
     if (result.modifiedCount === 0) {
       return reply.code(StatusCodes.FORBIDDEN).send({
-        error:
-          "Insufficient shells, or you have already reached the maximum number of slots",
+        error: "Insufficient shells, or you have already reached the maximum number of slots",
       });
     }
 

@@ -15,10 +15,9 @@ const accounts = database.collection<AccountData>("accounts");
 const characters = database.collection<CharacterData>("characters");
 
 export {
-  client as Client,
-  database as Database,
-
   // Collections
   accounts as Accounts,
   characters as Characters,
+  client as Client,
+  database as Database,
 };

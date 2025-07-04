@@ -1,12 +1,12 @@
-import { Accounts, Characters } from "../../database.ts";
-import { verifier } from "../../jwt.ts";
-import { Logger } from "../../logger.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken, CharacterData } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
 import { MongoServerError } from "mongodb";
+import { Accounts, Characters } from "../../database.ts";
+import { verifier } from "../../jwt.ts";
+import { Logger } from "../../logger.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.createCharacter.enabled");
 const minLength = config.get("centralServer.createCharacter.minLength");
@@ -53,18 +53,14 @@ export const CreateCharacterSchema = {
   },
 };
 
-export type CreateCharacterResponse = Static<
-  (typeof CreateCharacterSchema.response)[StatusCodes.CREATED]
->;
+export type CreateCharacterResponse = Static<(typeof CreateCharacterSchema.response)[StatusCodes.CREATED]>;
 
 export const createCharacterHandler = async (
   request: FastifyRequestTypebox<typeof CreateCharacterSchema>,
   reply: FastifyReplyTypebox<typeof CreateCharacterSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Character creation is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Character creation is currently disabled" });
   }
 
   const { token, character } = request.body;
@@ -79,10 +75,7 @@ export const createCharacterHandler = async (
 
   // Check that they have enough slots to make a new character
   try {
-    const account = await Accounts.findOne(
-      { id: jwt.accountId },
-      { projection: { slots: 1 } },
-    );
+    const account = await Accounts.findOne({ id: jwt.accountId }, { projection: { slots: 1 } });
     if (!account) {
       throw new Error(
         `ID ${jwt.accountId} was successfully authenticated via token, but the account could not be retrieved!`,
@@ -93,9 +86,7 @@ export const createCharacterHandler = async (
       accountId: jwt.accountId,
     });
     if (numCharacters >= account.slots) {
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: "You do not have any available slots" });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: "You do not have any available slots" });
     }
   } catch (error) {
     const message = "An unexpected error occurred during character creation";
@@ -120,9 +111,7 @@ export const createCharacterHandler = async (
   } catch (error) {
     if (error instanceof MongoServerError) {
       if (error.code === 11000) {
-        return reply
-          .code(StatusCodes.FORBIDDEN)
-          .send({ error: "A character with that name already exists" });
+        return reply.code(StatusCodes.FORBIDDEN).send({ error: "A character with that name already exists" });
       }
     }
     const message = "An unexpected error occurred during character creation";

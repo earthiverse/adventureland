@@ -1,10 +1,10 @@
-import { verifier } from "../../jwt.ts";
-import state from "../../state.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import type { AuthToken } from "@adventureland/types";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
+import { verifier } from "../../jwt.ts";
+import state from "../../state.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.getServers.enabled");
 
@@ -28,18 +28,14 @@ export const GetServersSchema = {
   },
 };
 
-export type GetServersResponse = Static<
-  (typeof GetServersSchema.response)[StatusCodes.OK]
->;
+export type GetServersResponse = Static<(typeof GetServersSchema.response)[StatusCodes.OK]>;
 
 export const getServersHandler = async (
   request: FastifyRequestTypebox<typeof GetServersSchema>,
   reply: FastifyReplyTypebox<typeof GetServersSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Getting servers is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Getting servers is currently disabled" });
   }
 
   // Get the token from the request body
@@ -54,9 +50,7 @@ export const getServersHandler = async (
 
   // Get all servers
   const servers: GetServersResponse = {};
-  for (const [serverName, serverState] of Object.entries(
-    state.registeredServers,
-  )) {
+  for (const [serverName, serverState] of Object.entries(state.registeredServers)) {
     if (!serverState.online) continue;
     servers[serverName] = {
       serverUrl: serverState.serverUrl,

@@ -1,15 +1,13 @@
-import { Characters } from "./database.ts";
-import { Logger } from "./logger.ts";
-import State, { type ServerState } from "./state.ts";
 import Config from "config";
 import { StatusCodes } from "http-status-codes";
 import { LRUCache } from "lru-cache";
+import { Characters } from "./database.ts";
+import { Logger } from "./logger.ts";
+import State, { type ServerState } from "./state.ts";
 
 const checkLoopInterval = Config.get("centralServer.checkLoop.interval");
 const timeout = Config.get("centralServer.checkLoop.timeout");
-const numBeforeUnhealthy = Config.get(
-  "centralServer.checkLoop.numChecksBeforeUnhealthy",
-);
+const numBeforeUnhealthy = Config.get("centralServer.checkLoop.numChecksBeforeUnhealthy");
 
 const healthData = new LRUCache<string, number>({ max: 10 });
 
@@ -19,10 +17,7 @@ const healthData = new LRUCache<string, number>({ max: 10 });
  * @param serverState
  * @returns True if the game server seems healthy
  */
-export async function checkGameServerHealth(
-  serverId: string,
-  serverState: ServerState,
-): Promise<boolean> {
+export async function checkGameServerHealth(serverId: string, serverState: ServerState): Promise<boolean> {
   try {
     // Ping the server
     const response = await fetch(serverState.serverUrl + "/api/status", {
@@ -56,10 +51,7 @@ export async function checkGameServerHealth(
  * @returns Number of characters set offline
  */
 export async function setCharactersOffline(serverId: string): Promise<number> {
-  const result = await Characters.updateMany(
-    { online: serverId },
-    { $unset: { online: 1 } },
-  );
+  const result = await Characters.updateMany({ online: serverId }, { $unset: { online: 1 } });
   return result.modifiedCount;
 }
 
@@ -70,9 +62,7 @@ export async function setCharactersOffline(serverId: string): Promise<number> {
 export async function checkLoop(initial: boolean) {
   try {
     // Check the health of servers
-    for (const [serverId, serverData] of Object.entries(
-      State.registeredServers,
-    )) {
+    for (const [serverId, serverData] of Object.entries(State.registeredServers)) {
       if (await checkGameServerHealth(serverId, serverData)) {
         if (!serverData.online) {
           serverData.online = true;

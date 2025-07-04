@@ -22,10 +22,9 @@ await characters.createIndex({ id: 1 }, { unique: true });
 await characters.createIndex({ name: 1 }, { unique: true });
 
 export {
-  client as Client,
-  database as Database,
-
   // Collections
   accounts as Accounts,
   characters as Characters,
+  client as Client,
+  database as Database,
 };

@@ -1,11 +1,11 @@
-import { checkLoop } from "./checkLoop.ts";
-import { Logger } from "./logger.ts";
-import { setupApiRoutes } from "./routes/api.ts";
-import { setupServerApiRoutes } from "./routes/serverApi.ts";
 import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Config from "config";
 import Fastify from "fastify";
 import { StatusCodes } from "http-status-codes";
+import { checkLoop } from "./checkLoop.ts";
+import { Logger } from "./logger.ts";
+import { setupApiRoutes } from "./routes/api.ts";
+import { setupServerApiRoutes } from "./routes/serverApi.ts";
 
 const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>();
 await fastify.register(import("@fastify/rate-limit"));
@@ -31,11 +31,7 @@ fastify.setErrorHandler((error, request, reply) => {
     Logger.error("Unhandled Error", { error, request });
     return reply
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send(
-        new Error(
-          "It looks like something went VERY wrong. Please contact support with the current URL.",
-        ),
-      );
+      .send(new Error("It looks like something went VERY wrong. Please contact support with the current URL."));
   }
 
   return reply.send(error);

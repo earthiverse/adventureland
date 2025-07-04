@@ -1,11 +1,11 @@
+import type { AuthTokenPayload } from "@adventureland/types";
+import { faker } from "@faker-js/faker";
+import { expect, test } from "@playwright/test";
+import { createSigner } from "fast-jwt";
+import { StatusCodes } from "http-status-codes";
 import { Accounts, Characters } from "../../src/database.ts";
 import type { SignupResponse } from "../../src/routes/api/signup.ts";
 import type { ForbiddenResponse } from "../api.spec.ts";
-import type { AuthTokenPayload } from "@adventureland/types";
-import { faker } from "@faker-js/faker";
-import { test, expect } from "@playwright/test";
-import { createSigner } from "fast-jwt";
-import { StatusCodes } from "http-status-codes";
 
 test.describe.serial("Purchase Shells Specification", () => {
   const email = faker.internet.email();
@@ -48,10 +48,7 @@ test.describe.serial("Purchase Shells Specification", () => {
     expect(jsonResponse.error).toBeTruthy();
 
     // There should not be any shells
-    const account = await Accounts.findOne(
-      { id: accountId },
-      { projection: { shells: 1, slots: 1 } },
-    );
+    const account = await Accounts.findOne({ id: accountId }, { projection: { shells: 1, slots: 1 } });
     expect(account).toBeTruthy();
     expect(account?.shells).toBe(0);
   });
@@ -84,10 +81,7 @@ test.describe.serial("Purchase Shells Specification", () => {
     sessionUrl = page.url();
 
     // There should be shells
-    const account = await Accounts.findOne(
-      { id: accountId },
-      { projection: { shells: 1, slots: 1 } },
-    );
+    const account = await Accounts.findOne({ id: accountId }, { projection: { shells: 1, slots: 1 } });
     expect(account).toBeTruthy();
     expect(account?.shells).toBe(numShells);
   });
@@ -98,10 +92,7 @@ test.describe.serial("Purchase Shells Specification", () => {
     expect(response.status()).toBe(StatusCodes.FORBIDDEN);
 
     // There should be shells
-    const account = await Accounts.findOne(
-      { id: accountId },
-      { projection: { shells: 1, slots: 1 } },
-    );
+    const account = await Accounts.findOne({ id: accountId }, { projection: { shells: 1, slots: 1 } });
     expect(account).toBeTruthy();
     expect(account?.shells).toBe(numShells);
   });

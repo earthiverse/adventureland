@@ -1,13 +1,13 @@
+import type { AccountData, AuthToken } from "@adventureland/types";
+import { Type } from "@sinclair/typebox";
+import Config from "config";
+import { StatusCodes } from "http-status-codes";
 import { Accounts } from "../../database.ts";
 import { verifier } from "../../jwt.ts";
 import { Logger } from "../../logger.ts";
 import { Stripe } from "../../stripe.ts";
 import { generateUrl } from "../../url.ts";
 import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
-import type { AccountData, AuthToken } from "@adventureland/types";
-import { Type } from "@sinclair/typebox";
-import Config from "config";
-import { StatusCodes } from "http-status-codes";
 
 const enabled = Config.get("centralServer.purchaseShells.enabled");
 const costs = Config.get("centralServer.purchaseShells.costs");
@@ -33,9 +33,7 @@ export const purchaseShellsHandler = async (
   reply: FastifyReplyTypebox<typeof PurchaseShellsSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Purchasing shells is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Purchasing shells is currently disabled" });
   }
 
   const { token, numShells } = request.body;
@@ -60,10 +58,7 @@ export const purchaseShellsHandler = async (
   // Get account's email
   let account: Pick<AccountData, "email"> | null;
   try {
-    account = await Accounts.findOne(
-      { id: jwt.accountId },
-      { projection: { email: 1 } },
-    );
+    account = await Accounts.findOne({ id: jwt.accountId }, { projection: { email: 1 } });
 
     if (!account) {
       throw new Error(
@@ -100,10 +95,7 @@ export const purchaseShellsHandler = async (
     ],
     mode: "payment",
     // NOTE: This has to match with the schema for `verifyPurchaseShells`!
-    success_url: generateUrl(
-      request,
-      `/api/verifyPurchaseShells/{CHECKOUT_SESSION_ID}`,
-    ),
+    success_url: generateUrl(request, `/api/verifyPurchaseShells/{CHECKOUT_SESSION_ID}`),
     // TODO: cancel_url that goes to the page for buying shells
   });
 

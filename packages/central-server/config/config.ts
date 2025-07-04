@@ -18,7 +18,7 @@ declare module "config" {
         /** Number of failed checks before we mark the server as unhealthy */
         numChecksBeforeUnhealthy: number;
       };
-      cors: FastifyCorsOptions
+      cors: FastifyCorsOptions;
       createCharacter: {
         enabled: boolean;
         rateLimit: RateLimitOptions;

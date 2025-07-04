@@ -1,13 +1,13 @@
+import type { AuthTokenPayload } from "@adventureland/types";
+import { faker } from "@faker-js/faker";
+import { expect, test } from "@playwright/test";
+import config from "config";
+import { createSigner } from "fast-jwt";
+import { StatusCodes } from "http-status-codes";
 import { Accounts, Characters } from "../../src/database.ts";
 import type { ChangeEmailResponse } from "../../src/routes/api/changeEmail.ts";
 import type { SignupResponse } from "../../src/routes/api/signup.ts";
 import type { ForbiddenResponse } from "../api.spec.ts";
-import type { AuthTokenPayload } from "@adventureland/types";
-import { faker } from "@faker-js/faker";
-import { test, expect } from "@playwright/test";
-import config from "config";
-import { createSigner } from "fast-jwt";
-import { StatusCodes } from "http-status-codes";
 
 test.describe.serial("Change Email Specification", () => {
   const email = faker.internet.email();
@@ -32,9 +32,7 @@ test.describe.serial("Change Email Specification", () => {
     token = jsonResponse.token;
   });
 
-  test("Forbidden to change email before creating a character", async ({
-    request,
-  }) => {
+  test("Forbidden to change email before creating a character", async ({ request }) => {
     const response = await request.post("/api/changeEmail", {
       data: {
         token,
@@ -106,9 +104,7 @@ test.describe.serial("Change Email Specification", () => {
     expect(jsonResponse.newEmail).toBe(newEmail);
 
     // Get the verifyCode from the email in Mailpit
-    const verifyEmailsFetch = await fetch(
-      `http://localhost:8025/api/v1/search?query=to:${newEmail}`,
-    );
+    const verifyEmailsFetch = await fetch(`http://localhost:8025/api/v1/search?query=to:${newEmail}`);
     const verifyEmails = (await verifyEmailsFetch.json()) as {
       messages_count: number;
       messages: { ID: string }[];
@@ -116,14 +112,9 @@ test.describe.serial("Change Email Specification", () => {
     expect(verifyEmails.messages_count).toBe(1);
     const verifyEmailID = verifyEmails.messages[0]?.ID as string;
     expect(verifyEmailID).toBeTruthy();
-    const verifyEmailFetch = await fetch(
-      `http://localhost:8025/api/v1/message/${verifyEmailID}`,
-    );
+    const verifyEmailFetch = await fetch(`http://localhost:8025/api/v1/message/${verifyEmailID}`);
     const verifyEmail = (await verifyEmailFetch.json()) as { Text: string };
-    const verifyCodeRegex = new RegExp(
-      `^http.+/(.{${config.get("centralServer.verifyEmail.codeLength")}})$`,
-      "m",
-    );
+    const verifyCodeRegex = new RegExp(`^http.+/(.{${config.get("centralServer.verifyEmail.codeLength")}})$`, "m");
     verifyCode = verifyCodeRegex.exec(verifyEmail.Text)?.[1] as string;
     expect(verifyCode).toBeTruthy();
 
@@ -138,9 +129,7 @@ test.describe.serial("Change Email Specification", () => {
     expect(notifyEmails.messages_count).toBe(1);
     const notifyEmailID = notifyEmails.messages[0]?.ID as string;
     expect(notifyEmailID).toBeTruthy();
-    const notifyEmailFetch = await fetch(
-      `http://localhost:8025/api/v1/message/${notifyEmailID}`,
-    );
+    const notifyEmailFetch = await fetch(`http://localhost:8025/api/v1/message/${notifyEmailID}`);
     const notifyEmail = (await notifyEmailFetch.json()) as { Text: string };
     expect(notifyEmail.Text).toContain(newEmail);
 

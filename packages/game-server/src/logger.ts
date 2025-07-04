@@ -15,10 +15,7 @@ if (Config.get("logging.console")) {
   Logger.add(
     new Winston.transports.Console({
       level: "debug",
-      format: Winston.format.combine(
-        Winston.format.colorize(),
-        Winston.format.simple(),
-      ),
+      format: Winston.format.combine(Winston.format.colorize(), Winston.format.simple()),
     }),
   );
 }

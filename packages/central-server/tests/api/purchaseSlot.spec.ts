@@ -1,13 +1,13 @@
+import type { AuthTokenPayload } from "@adventureland/types";
+import { faker } from "@faker-js/faker";
+import { expect, test } from "@playwright/test";
+import Config from "config";
+import { createSigner } from "fast-jwt";
+import { StatusCodes } from "http-status-codes";
 import { Accounts, Characters } from "../../src/database.ts";
 import type { PurchaseSlotResponse } from "../../src/routes/api/purchaseSlot.ts";
 import type { SignupResponse } from "../../src/routes/api/signup.ts";
 import type { ForbiddenResponse } from "../api.spec.ts";
-import type { AuthTokenPayload } from "@adventureland/types";
-import { faker } from "@faker-js/faker";
-import { test, expect } from "@playwright/test";
-import Config from "config";
-import { createSigner } from "fast-jwt";
-import { StatusCodes } from "http-status-codes";
 
 const initialSlots = Config.get("centralServer.signup.initial.slots");
 const slotCost = Config.get("centralServer.purchaseSlot.cost");
@@ -74,10 +74,7 @@ test.describe.serial("Purchase Slot Specification", () => {
     expect(jsonResponse.error).toBeTruthy();
 
     // There should not be an additional slot
-    const account = await Accounts.findOne(
-      { id: accountId },
-      { projection: { shells: 1, slots: 1 } },
-    );
+    const account = await Accounts.findOne({ id: accountId }, { projection: { shells: 1, slots: 1 } });
     expect(account).toBeTruthy();
     expect(account?.shells).toBe(slotCost);
     expect(account?.slots).toBe(initialSlots);
@@ -101,10 +98,7 @@ test.describe.serial("Purchase Slot Specification", () => {
     expect(jsonResponse.numSlots).toBe(initialSlots + 1);
 
     // We should have deducted the correct number of shells, and have an additional slot
-    const account = await Accounts.findOne(
-      { id: accountId },
-      { projection: { shells: 1, slots: 1 } },
-    );
+    const account = await Accounts.findOne({ id: accountId }, { projection: { shells: 1, slots: 1 } });
     expect(account).toBeTruthy();
     expect(account?.shells).toBe(0);
     expect(account?.slots).toBe(initialSlots + 1);

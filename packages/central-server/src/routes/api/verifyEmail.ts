@@ -1,9 +1,9 @@
-import { Accounts } from "../../database.ts";
-import { Logger } from "../../logger.ts";
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type, type Static } from "@sinclair/typebox";
 import config from "config";
 import { StatusCodes } from "http-status-codes";
+import { Accounts } from "../../database.ts";
+import { Logger } from "../../logger.ts";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const enabled = config.get("centralServer.verifyEmail.enabled");
 const codeLength = config.get("centralServer.verifyEmail.codeLength");
@@ -26,18 +26,14 @@ export const VerifyEmailSchema = {
   },
 };
 
-export type VerifyEmailResponse = Static<
-  (typeof VerifyEmailSchema.response)[StatusCodes.OK]
->;
+export type VerifyEmailResponse = Static<(typeof VerifyEmailSchema.response)[StatusCodes.OK]>;
 
 export const verifyEmailHandler = async (
   request: FastifyRequestTypebox<typeof VerifyEmailSchema>,
   reply: FastifyReplyTypebox<typeof VerifyEmailSchema>,
 ) => {
   if (!enabled) {
-    return reply
-      .code(StatusCodes.FORBIDDEN)
-      .send({ error: "Verifying emails is currently disabled" });
+    return reply.code(StatusCodes.FORBIDDEN).send({ error: "Verifying emails is currently disabled" });
   }
 
   const { verificationCode } = request.params;
@@ -51,15 +47,11 @@ export const verifyEmailHandler = async (
       { projection: { id: 1, emailChange: 1 } },
     );
     if (account === null) {
-      return reply
-        .code(StatusCodes.FORBIDDEN)
-        .send({ error: "Invalid verification code" });
+      return reply.code(StatusCodes.FORBIDDEN).send({ error: "Invalid verification code" });
     }
 
     if (account.emailChange === undefined) {
-      throw new Error(
-        "Email change object is undefined, but it should have been set",
-      );
+      throw new Error("Email change object is undefined, but it should have been set");
     }
 
     // Set the new email, remove the email change

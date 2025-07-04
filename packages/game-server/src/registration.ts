@@ -1,7 +1,7 @@
-import { signer } from "./jwt.ts";
-import { Logger } from "./logger.ts";
 import Config from "config";
 import { StatusCodes } from "http-status-codes";
+import { signer } from "./jwt.ts";
+import { Logger } from "./logger.ts";
 
 const centralServerUrl = Config.get("centralServer.url");
 const serverId = Config.get("gameServer.id");

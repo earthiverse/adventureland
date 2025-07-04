@@ -1,6 +1,6 @@
-import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 import { Type, type Static } from "@sinclair/typebox";
 import { StatusCodes } from "http-status-codes";
+import type { FastifyReplyTypebox, FastifyRequestTypebox } from "../types.ts";
 
 const started = Date.now();
 
@@ -15,9 +15,7 @@ export const StatusSchema = {
   },
 };
 
-export type StatusResponse = Static<
-  (typeof StatusSchema.response)[StatusCodes.OK]
->;
+export type StatusResponse = Static<(typeof StatusSchema.response)[StatusCodes.OK]>;
 
 export const statusHandler = async (
   request: FastifyRequestTypebox<typeof StatusSchema>,
