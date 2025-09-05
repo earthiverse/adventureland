@@ -12,7 +12,7 @@ on:
 
 jobs:
   eslint:
-    name: Run eslint scanning
+    name: Run ESLint
     runs-on: ubuntu-latest
     permissions:
       contents: read

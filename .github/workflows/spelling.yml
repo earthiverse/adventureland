@@ -1,0 +1,25 @@
+# From https://github.com/crate-ci/typos/blob/master/docs/github-action.md
+
+name: Spelling
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+env:
+  CLICOLOR: 1
+
+jobs:
+  spelling:
+    name: Run Typos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Actions Repository
+        uses: actions/checkout@v4
+      - name: Spell Check Repo
+        uses: crate-ci/typos@v1.36.2
