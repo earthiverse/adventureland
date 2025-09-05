@@ -1,7 +1,7 @@
 import type { FastifyRequest } from "fastify";
 
 /**
- * Generates a URL with the route using whatever host Fastify recieved the request with
+ * Generates a URL with the route using whatever host Fastify received the request with
  * @param request
  * @param route
  * @returns

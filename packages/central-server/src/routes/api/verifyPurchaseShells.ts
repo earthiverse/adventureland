@@ -81,12 +81,12 @@ export const verifyPurchaseShellsHandler = async (
     });
     return reply.code(StatusCodes.PAYMENT_REQUIRED).send({
       error:
-        "The payment has not been completed. Please email support with the Stripe sesssion ID if this is incorrect.",
+        "The payment has not been completed. Please email support with the Stripe session ID if this is incorrect.",
       stripeSessionId,
     });
   }
 
-  // Ensure that the sesssion hasn't already been processed
+  // Ensure that the session hasn't already been processed
   const processed = stripeSession.metadata?.processed;
   if (processed !== undefined) {
     Logger.warning("Stripe session was attempted to be processed multiple times", {
@@ -97,7 +97,7 @@ export const verifyPurchaseShellsHandler = async (
     });
     return reply.code(StatusCodes.FORBIDDEN).send({
       error:
-        "The shells for this purchase have already been credited. Please email support with the Stripe sesssion ID if this is incorrect.",
+        "The shells for this purchase have already been credited. Please email support with the Stripe session ID if this is incorrect.",
       stripeSessionId,
     });
   }
