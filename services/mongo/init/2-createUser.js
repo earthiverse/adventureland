@@ -1,8 +1,8 @@
 /* global db */
 
-const alDb = db.getSiblingDB(process.env.MONGO_DATABASE);
+console.log("Creating user...");
 
-console.log("creating", process.env.MONGO_USERNAME, process.env.MONGO_PASSWORD);
+const alDb = db.getSiblingDB(process.env.MONGO_DATABASE);
 
 // Create the user that we will authenticate with
 alDb.createUser({
