@@ -1,5 +1,12 @@
-import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import * as Sentry from "@sentry/node";
 import Config from "config";
+
+// Setup Sentry
+if (Config.has("sentry")) {
+  Sentry.init({ ...Config.get("sentry") });
+}
+
+import { type TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import Fastify from "fastify";
 import { StatusCodes } from "http-status-codes";
 import { checkLoop } from "./checkLoop.ts";
@@ -69,10 +76,17 @@ async function gracefulShutdown() {
     await fastify.close();
   } catch (error) {
     Logger.error("Error closing fastify", { error });
-    exitCode++;
+    exitCode += 1;
   }
 
-  Logger.end();
+  try {
+    await Sentry.flush(5000);
+  } catch (error) {
+    Logger.error("Error flushing Sentry", { error });
+    exitCode += 2;
+  }
+
+  await new Promise<void>((resolve) => Logger.end(resolve));
   process.exit(exitCode);
 }
 // eslint-disable-next-line @typescript-eslint/no-misused-promises

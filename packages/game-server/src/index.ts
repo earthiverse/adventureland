@@ -1,4 +1,11 @@
+import * as Sentry from "@sentry/node";
 import Config from "config";
+
+// Setup Sentry
+if (Config.has("sentry")) {
+  Sentry.init({ ...Config.get("sentry") });
+}
+
 import Fastify from "fastify";
 import { gameLoop } from "./gameLoop.ts";
 import { Logger } from "./logger.ts";
@@ -68,7 +75,14 @@ async function gracefulShutdown() {
     exitCode += 4;
   }
 
-  Logger.end();
+  try {
+    await Sentry.flush(5000);
+  } catch (error) {
+    Logger.error("Error flushing Sentry", { error });
+    exitCode += 8;
+  }
+
+  await new Promise<void>((resolve) => Logger.end(resolve));
   process.exit(exitCode);
 }
 // eslint-disable-next-line @typescript-eslint/no-misused-promises

@@ -1,4 +1,5 @@
 import type { RateLimitOptions } from "@fastify/rate-limit";
+import type { NodeOptions } from "@sentry/node";
 import type { SyslogTransportOptions } from "winston-syslog";
 
 declare module "config" {
@@ -36,5 +37,6 @@ declare module "config" {
       /** If set, we will create a Syslog transport with these options */
       syslog?: SyslogTransportOptions;
     };
+    sentry?: NodeOptions;
   }
 }

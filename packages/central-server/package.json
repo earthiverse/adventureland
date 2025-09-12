@@ -30,6 +30,7 @@
     "@fastify/cors": "^11.0.1",
     "@fastify/rate-limit": "^10.2.1",
     "@fastify/type-provider-typebox": "^5.1.0",
+    "@sentry/node": "^10.11.0",
     "@sinclair/typebox": "^0.34.33",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.2",

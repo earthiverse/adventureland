@@ -1,5 +1,6 @@
 import type { FastifyCorsOptions } from "@fastify/cors";
 import type { RateLimitOptions } from "@fastify/rate-limit";
+import type { NodeOptions } from "@sentry/node";
 import type { SyslogTransportOptions } from "winston-syslog";
 
 declare module "config" {
@@ -114,6 +115,7 @@ declare module "config" {
       /** If set, we will create a Syslog transport with these options */
       syslog?: SyslogTransportOptions;
     };
+    sentry?: NodeOptions;
     stripe: {
       publishable_key: string;
       secret_key: string;

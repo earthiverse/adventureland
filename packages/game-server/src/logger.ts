@@ -1,7 +1,9 @@
+import * as Sentry from "@sentry/node";
 import Config from "config";
 import { hostname } from "node:os";
 import Winston from "winston";
 import { Syslog } from "winston-syslog";
+import Transport from "winston-transport";
 import winston from "winston/lib/winston/config/index.js";
 
 const Logger = Winston.createLogger({ levels: winston.syslog.levels });
@@ -18,6 +20,11 @@ if (Config.get("logging.console")) {
       format: Winston.format.combine(Winston.format.colorize(), Winston.format.simple()),
     }),
   );
+}
+
+if (Config.has("sentry")) {
+  const SentryWinstonTransport = Sentry.createSentryWinstonTransport(Transport);
+  Logger.add(new SentryWinstonTransport());
 }
 
 export { Logger };
