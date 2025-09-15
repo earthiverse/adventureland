@@ -121,8 +121,6 @@
     }
   },
   "database": {
-    "uri": "mongodb://adventureland:adventureland@mongo:27017/adventureland",
-    "name": "adventureland",
     "clientOptions": {
       "appName": "Adventureland Central Server",
       "directConnection": true
