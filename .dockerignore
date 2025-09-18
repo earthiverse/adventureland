@@ -1,2 +1,15 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
 **/Dockerfile
+
+# OS
+.DS_Store
+Thumbs.db
+
+# App
 **/packages/*/config/local*
+**/packages/*/config/production*

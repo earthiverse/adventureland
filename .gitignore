@@ -1,6 +1,9 @@
 # MacOS
 .DS_Store
 
+# Secrets
+.env
+
 # Docker
 docker-compose.*override.yml
 
