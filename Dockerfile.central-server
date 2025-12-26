@@ -1,0 +1,31 @@
+FROM google/cloud-sdk:alpine
+
+# Install Python App Engine
+RUN gcloud components install app-engine-python
+
+# Set working directory
+WORKDIR /app
+
+# Copy application files
+COPY python3/app.yaml .
+COPY python3/requirements.txt .
+COPY cron.yaml .
+COPY index.yaml .
+COPY queue.yaml .
+COPY *.py .
+COPY images images
+COPY css css
+COPY design design
+COPY docs docs
+COPY htmls htmls
+COPY libraries/stripe3 libraries/stripe3
+COPY libraries/amazon_ses3.py libraries/
+COPY libraries/country_to_latlon.py libraries/
+COPY sounds sounds
+COPY js js
+COPY utility utility
+
+# Expose dev server port
+EXPOSE 8080
+
+CMD [ "python", "/google-cloud-sdk/bin/dev_appserver.py", "--storage_path=/storage", "--blobstore_path=/storage/blobstore/", "--datastore_path=/storage/db.rdbms", "app.yaml", "--host=0.0.0.0",  "--require_indexes", "--enable_host_checking=False" ]

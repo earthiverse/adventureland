@@ -354,7 +354,7 @@
 			});
 		</script>
 		{%for k in domain.imagesets %}
-			<img src="{{domain.base_url}}{{domain.imagesets[k].file}}" style='display:none' />
+			<img src="{{domain.imagesets[k].file}}" style='display:none' />
 		{% endfor %}
 <textarea id='dcode' style='display:none'>{% if domain.code %}{{domain.code}}{% else %}{% include 'htmls/contents/codes/default_code.js' %}{% endif %}
 </textarea>
