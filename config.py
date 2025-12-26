@@ -164,14 +164,16 @@ def gdi(request=None):
 		if request:
 			url=urlparse(request.url)
 			protocol=url.scheme
+			hostname_with_port=url.netloc
 			hostname=url.hostname
 		else:
 			protocol="http"
+			hostname_with_port = sdk_domain
 			hostname=sdk_domain
 
-		domain.base_url=protocol + "://" + hostname
+		domain.base_url=protocol + "://" + hostname_with_port
 		domain.pref_url=domain.base_url
-		domain.server_ip="192.168.1.125"
+		domain.server_ip="127.0.0.1"
 		domain.stripe_pkey=stripe_pkey
 		domain.stripe_enabled=False
 		domain.https_mode=False

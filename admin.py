@@ -5,7 +5,7 @@ from functions import *
 @ndb.toplevel
 def serve_admin_maker():
 	domain=gdi(request); user=get_user(request,domain)
-	if not user or user.info.email!="your_email_here": return "no permission"
+	if not user or user.info.email!="admin@game.local": return "no permission"
 	user.admin=True
 	user.put()
 	return "done!"

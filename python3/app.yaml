@@ -1,15 +1,16 @@
+application: twodimensionalgame
 runtime: python312
 app_engine_apis: true
 builtins:
-- deferred: on
+  - deferred: on
 
 #F2/F4: same warmup handler performance [14/10/14]
 # F4_1G cost 3X [05/04/24]
 instance_class: F1
 automatic_scaling:
- min_idle_instances: 0
- max_idle_instances: 1
- min_pending_latency: 14000ms
+  min_idle_instances: 0
+  max_idle_instances: 1
+  min_pending_latency: 14000ms
 # max_pending_latency: 12000ms
 
 entrypoint: gunicorn --bind=:$PORT --workers=2 --preload main:app # 4 for F2 - 2 for F1
@@ -21,24 +22,24 @@ entrypoint: gunicorn --bind=:$PORT --workers=2 --preload main:app # 4 for F2 - 2
 default_expiration: "4d"
 
 handlers:
-- url: /favicon\.ico
-  static_files: images/favicon.ico
-  upload: favicon\.ico
-- url: /css
-  static_dir: css
-- url: /images
-  static_dir: images
-- url: /img/
-  static_dir: images/screenshots
-- url: /sounds
-  static_dir: sounds
-- url: /js
-  static_dir: js
-- url: .*
-  script: auto
+  - url: /favicon\.ico
+    static_files: images/favicon.ico
+    upload: favicon\.ico
+  - url: /css
+    static_dir: css
+  - url: /images
+    static_dir: images
+  - url: /img/
+    static_dir: images/screenshots
+  - url: /sounds
+    static_dir: sounds
+  - url: /js
+    static_dir: js
+  - url: .*
+    script: auto
 
 env_variables:
-#  NDB_PY2_UNPICKLE_COMPAT: True
+  #  NDB_PY2_UNPICKLE_COMPAT: True
   NDB_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: True
   MEMCACHE_USE_CROSS_COMPATIBLE_PROTOCOL: True
-  DEFERRED_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL:  True
+  DEFERRED_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: True

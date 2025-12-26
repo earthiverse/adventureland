@@ -705,7 +705,7 @@ def update_characters(user,reason=None,name=None,shells=0):
 			try:
 				server=get_by_iid("server|%s"%character.server)
 				ip=server.actual_ip
-				if is_sdk: ip="0.0.0.0"
+				if is_sdk: ip="127.0.0.1"
 				if not reason:
 					fetch_url("http://%s:%s"%(ip,server.port),aevent="cupdate",spass=secrets.ACCESS_MASTER,cash=user.cash,id=character.info.name,ncash=shells)
 				elif reason=="friends":
@@ -1054,13 +1054,13 @@ def verify_steam_installs():
 
 def server_eval(server,code,data={}):
 	ip=server.actual_ip
-	if is_sdk: ip="0.0.0.0"
+	if is_sdk: ip="127.0.0.1"
 	return json.loads(fetch_url("http://%s:%s"%(ip,server.port),aevent="eval",spass=secrets.ACCESS_MASTER,code=code.replace("+","%2B"),data=json.dumps(data).replace("+","%2B")))
 
 def server_eval_safe(server,code,data={}):
 	try:
 		ip=server.actual_ip
-		if is_sdk: ip="0.0.0.0"
+		if is_sdk: ip="127.0.0.1"
 		return json.loads(fetch_url("http://%s:%s"%(ip,server.port),aevent="eval",spass=secrets.ACCESS_MASTER,code=code.replace("+","%2B"),data=json.dumps(data).replace("+","%2B")))
 	except:
 		log_trace()
